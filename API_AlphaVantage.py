@@ -2,6 +2,7 @@
 # Docs: https://www.alphavantage.co/documentation/
 
 from StockTrends.config import AlphaVantage_API_KEY
+#from config import AlphaVantage_API_KEY
 import requests
 
 AlphaVantage_API_Key = AlphaVantage_API_KEY
@@ -10,7 +11,8 @@ BaseURL = "https://www.alphavantage.co/query"
 
 # TODO: Implement Error Handling and Improve docstrings / arg labels. 
 
-def Get_News_On_Stock(ticker: str):
+
+def Get_News_On_Stock(ticker: str, use_mock_data: bool=False):
     ''' Returns the latest news on a given stock. 
 
     The returned value is a list of dicts which contain the following:
@@ -20,13 +22,15 @@ def Get_News_On_Stock(ticker: str):
     * Sentiment Score (str)
     '''
 
-    params = {
-        'function':"NEWS_SENTIMENT",
-        'tickers':ticker,
-        'apikey':AlphaVantage_API_Key
-    }
-
-    request = requests.get(BaseURL, params=params)
+    if(use_mock_data):
+        request = requests.get('https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=AAPL&apikey=demo')
+    else:
+        params = {
+            'function':"NEWS_SENTIMENT",
+            'tickers':ticker,
+            'apikey':AlphaVantage_API_Key
+        }
+        request = requests.get(BaseURL, params=params)
 
     # parse output
     json = request.json()
@@ -46,7 +50,7 @@ def Get_News_On_Stock(ticker: str):
 
 
 # NOTE: This api call requires a subscription to the AlphaVantage API. 
-def Get_Intraday_Data_On_Stock(ticker: str, timeInterval=5):
+def Get_Intraday_Data_On_Stock(ticker: str, timeInterval=5, use_mock_data: bool=False):
     ''' Returns the Intraday data on a given stock. (timeInterval is in mins)
     
     * timeInterval: (must be 1, 5, 15, 30, or 60)
@@ -54,14 +58,18 @@ def Get_Intraday_Data_On_Stock(ticker: str, timeInterval=5):
     The returned value is a list of ints that represent open prices, with the above
     time interval in-between each value. 
     ''' 
-    params = {
-        'function':'TIME_SERIES_INTRADAY',
-        'symbol':ticker,
-        'interval':timeInterval,
-        'apikey':AlphaVantage_API_Key
-    }
+    
+    if(use_mock_data):
+        request = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=demo')
+    else:
+        params = {
+            'function':'TIME_SERIES_INTRADAY',
+            'symbol':ticker,
+            'interval':timeInterval,
+            'apikey':AlphaVantage_API_Key
+        }
 
-    request = requests.get(BaseURL, params=params)
+        request = requests.get(BaseURL, params=params)
 
     # parse output
     json = request.json()
@@ -75,18 +83,22 @@ def Get_Intraday_Data_On_Stock(ticker: str, timeInterval=5):
 
     return output
 
-def Get_Daily_Data_On_Stock(ticker):
+def Get_Daily_Data_On_Stock(ticker:str, use_mock_data:bool=False):
     ''' Returns the Daily data on a given stock. 
     
     The returned value is a list of the last 100 daily open values. 
     ''' 
-    params = {
-        'function':'TIME_SERIES_DAILY',
-        'symbol':ticker,
-        'apikey':AlphaVantage_API_Key
-    }
 
-    request = requests.get(BaseURL, params=params)
+    if(use_mock_data):
+        request = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=demo')
+    else:
+        params = {
+            'function':'TIME_SERIES_DAILY',
+            'symbol':ticker,
+            'apikey':AlphaVantage_API_Key
+        }
+
+        request = requests.get(BaseURL, params=params)
 
     # parse output
     data = request.json()["Time Series (Daily)"]

@@ -36,14 +36,13 @@ def create_app(test_config=None):
             
             # NOTE: assumption is that the client will supply a valid ticker. 
             if(selected_news_articles):
-                output_news_data = Get_News_On_Stock(str(ticker))
+                output_news_data = Get_News_On_Stock(str(ticker), True)
 
             if(selected_last_30_day_prices):
-                output_price_data = Get_Daily_Data_On_Stock(str(ticker))
+                output_price_data = Get_Daily_Data_On_Stock(str(ticker), True)
 
             if(selected_intraday_data):
-                #output_intraday_data = Get_Intraday_Data_On_Stock(str(ticker)) #NOTE: intraday require subscription to AlphaVantage API.          
-                pass
+                output_intraday_data = Get_Intraday_Data_On_Stock(str(ticker), 5, True) #NOTE: intraday require subscription to AlphaVantage API.          
 
             return render_template('stocks.html', 
                        output_news_data=output_news_data, 
