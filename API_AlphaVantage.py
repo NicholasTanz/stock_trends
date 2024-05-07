@@ -45,7 +45,7 @@ def Create_Graph_And_Stats_On_AlphaVantageDataSet(alphaVantageDataSet):
 
     # Save Plot
     buffer = io.BytesIO()
-    plt.savefig(buffer, format='png', transparent=True, bbox_inches='tight')
+    plt.savefig(buffer, format='png')
     buffer.seek(0)
     plot_data = base64.b64encode(buffer.read()).decode('utf-8')
 
