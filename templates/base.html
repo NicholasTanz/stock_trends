@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Trends</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="title-bar">
+        <a href="/">
+            <h1>Stock Trends</h1>
+        </a>
+    </div>
+    <div class="container">
+        <!-- Clickable Headers Section -->
+        <section class="clickable-headers">
+            <h2>Choose an Option</h2>
+            <div class="header-links">
+                <a href="/stocks">Stocks</a>
+                <a href="/option2">Industries</a>
+                <a href="/dog">To Be Added</a>
+            </div>
+        </section>
+
+        <!-- About Stock Trends Section -->
+        <section class="description">
+            <h2>About Stock Trends</h2>
+            <p>Welcome to Stock Trends! This applications allows you to query specific stocks and industries for 
+                information such as metrics, news, and trends. To get started, click on one of the options above.
+            </p>
+        </section>
+
+    <!-- Source Code Link Section -->
+    <footer class="footer">
+        <a href="https://github.com/NicholasTanz/StockTrends">Source Code</a>
+    </footer>
+
+    </div>
+</body>
+</html>

@@ -11,7 +11,8 @@ BaseURL = "https://www.alphavantage.co/query"
 # TODO: Implement Error Handling and Improve docstrings. 
 
 def Get_News_On_Stock(ticker):
-    ''' Returns the latest news on a given stock. '''
+    ''' Returns the latest news on a given stock. 
+    '''
     params = {
         'function':"NEWS_SENTIMENT",
         'tickers':ticker,
@@ -19,6 +20,9 @@ def Get_News_On_Stock(ticker):
     }
 
     request = requests.get(BaseURL, params=params)
+
+    
+
     return request
 
 def Get_Intraday_Data_On_Stock(ticker, timeInterval=5):

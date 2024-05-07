@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Trends</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="title-bar">
+        <a href="/">
+            <h1>Stock Trends</h1>
+        </a>
+    </div>
+    <div class="container">
+            <!-- Stock Input Form Section -->
+            <section class="stock-form">
+            
+            <!-- Error Message Section -->
+            {% if error_message %}
+                <p style="color: rgb(255, 51, 51);">{{ error_message }}</p>
+            {% endif %}
+            
+            <h2>Enter a Stock Ticker</h2>
+                <form action="#" method="post">
+                    <input type="text" name="stock_ticker" id="stock_ticker" placeholder="Enter a stock ticker symbol">
+                    <br>
+                    <input type="checkbox" name="news_articles" id="news_articles">
+                    <label for="news_articles" style="color: white;">Recent News Articles</label>
+                    <br>
+                    <input type="checkbox" name="last_30_day_prices" id="last_30_day_prices">
+                    <label for="last_30_day_prices" style="color: white;">Last 30 Day Prices</label>
+                    <br>
+                    <input type="checkbox" name="intraday_data" id="intraday_data">
+                    <label for="intraday_data" style="color: white;">Intraday Data</label>
+                    <br>
+                    <button type="submit">Submit</button>
+                </form>
+            </section>
+        </div>
+    
+    <!-- Source Code Link Section -->
+    <footer class="footer">
+        <a href="https://github.com/NicholasTanz/StockTrends">Source Code</a>
+    </footer>
+</body>
+</html>
