@@ -118,3 +118,41 @@ a {
 .recent-news a:hover {
     text-decoration: underline; /* Add underline on hover */
 }
+
+/* Recent News Articles section styles */
+.recent-news {
+    color: white; /* Text color for recent news articles */
+    margin-top: 20px; /* Add some space between the form and recent news */
+}
+
+.recent-news h2 {
+    color: white; /* Text color for section heading */
+}
+
+.recent-news ul {
+    list-style-type: none; /* Remove default list styles */
+    padding: 0; /* Remove default padding */
+}
+
+.recent-news li {
+    margin-bottom: 20px; /* Add some space between articles */
+    padding: 10px; /* Add padding */
+    border-radius: 8px; /* Add border radius for rounded corners */
+}
+
+.recent-news li:nth-child(odd) {
+    background-color: #333; /* Background color for odd-numbered articles */
+}
+
+.recent-news li:nth-child(even) {
+    background-color: #444; /* Background color for even-numbered articles */
+}
+
+.recent-news a {
+    color: #fff; /* Link color for recent news articles */
+    text-decoration: none; /* Remove underline */
+}
+
+.recent-news a:hover {
+    text-decoration: underline; /* Add underline on hover */
+}

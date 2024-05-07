@@ -38,21 +38,80 @@
                 </form>
             </section>
     </div>
+    
     <div>
         <!-- Recent News Articles Section -->
+        {% if output_news_data %}
+        <details>
+        <summary style="color: white;">Recent News Articles</summary>
         <section class="recent-news">
             <h2>Recent News Articles</h2>
             <ul>
                 {% for article in output_news_data %}
                 <li>
-                    
+                    <h3>Summary: {{ article.summary }}</h3>
+                    <p>Date Posted: {{article.time_published}}</p>
+                    <p>Sentiment Score: {{article.overall_sentiment_score}} ({{article.overall_sentiment_label}})</p>
+                    <a href="{{ article.url }}" target="_blank">Read More</a>
                 </li>
                 {% endfor %}
             </ul>
         </section>
+        </details>
+        {% endif %}
+    </div>
 
-        </div>
-    
+    <div>   
+        <!-- Last 30 day Prices section -->
+        {% if output_price_data %}
+        <details>
+        <summary style="color: white;">Last 30 Day Prices</summary>
+        <section class="last-30-day-prices">
+            <section class="graph">
+                <img src="data:image/png;base64,{{ output_price_data.plot }}" alt="Sample Plot">
+            </section>
+            <div class="stats-section">
+            <ul>
+                <h2 style="color: white;">Statistics</h2>
+                <li>
+                    <p>Mean: {{output_price_data.stats.mean}}</p>
+                    <p>Standard Deviation: {{output_price_data.stats.std}}</p>
+                    <p>Minimum: {{output_price_data.stats.min}}</p>
+                    <p>Maximum: {{output_price_data.stats.max}}</p>
+                    <p>Median: {{output_price_data.stats.median}}</p>
+                </li>
+            </ul>
+            </div>
+        </section>
+        </details>
+        {% endif %}
+    </div>
+
+    <div>
+        <!-- Intraday Data Section -->
+        {% if output_intraday_data %}
+        <details>
+        <summary style="color: white;">Intraday Data</summary>
+        <section class="intraday-data">
+            <h2>Intraday Data</h2>
+            <ul>
+                {% for data in output_intraday_data %}
+                <li>
+                    <p>Time: {{ data.time }}</p>
+                    <p>Open: {{ data.open }}</p>
+                    <p>High: {{ data.high }}</p>
+                    <p>Low: {{ data.low }}</p>
+                    <p>Close: {{ data.close }}</p>
+                    <p>Volume: {{ data.volume }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        </details>
+        {% endif %}
+    </div>
+
+
     <!-- Source Code Link Section -->
     <footer class="footer">
         <a href="https://github.com/NicholasTanz/StockTrends">Source Code</a>

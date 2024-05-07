@@ -3,7 +3,12 @@
 
 from StockTrends.config import AlphaVantage_API_KEY
 #from config import AlphaVantage_API_KEY
+from datetime import datetime
 import requests
+import matplotlib.pyplot as plt
+import numpy as np
+import io
+import base64
 
 AlphaVantage_API_Key = AlphaVantage_API_KEY
 BaseURL = "https://www.alphavantage.co/query"
@@ -11,6 +16,40 @@ BaseURL = "https://www.alphavantage.co/query"
 
 # TODO: Implement Error Handling and Improve docstrings / arg labels. 
 
+
+def Create_Graph_And_Stats_On_AlphaVantageDataSet(alphaVantageDataSet):
+    #TODO: add functionality for intraday, week, month, etc.
+    ''' '''
+    x_vals = []
+    y_vals = []
+    for (date, innerDataDict) in (alphaVantageDataSet.items()):
+        y_vals.append(float(innerDataDict["1. open"]))
+        x_vals.append(datetime.strptime(date, "%Y-%m-%d"))
+    
+    # Generate Stats. 
+    stats = {
+    'mean':np.mean(y_vals),
+    'stdev':np.std(y_vals),
+    'median':np.median(y_vals),
+    'max':np.max(y_vals),
+    'min':np.min(y_vals)
+    }
+
+    # Create Graph.
+    plt.figure(figsize=(8,6))
+    plt.scatter(x_vals, y_vals)
+    plt.xlabel('Time (Days)')
+    plt.ylabel('Price (USD)')
+    plt.grid(True)
+    plt.title('Stock Price')
+
+    # Save Plot
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', transparent=True, bbox_inches='tight')
+    buffer.seek(0)
+    plot_data = base64.b64encode(buffer.read()).decode('utf-8')
+
+    return {'plot':plot_data, 'stats':stats}
 
 def Get_News_On_Stock(ticker: str, use_mock_data: bool=False):
     ''' Returns the latest news on a given stock. 
@@ -20,6 +59,7 @@ def Get_News_On_Stock(ticker: str, use_mock_data: bool=False):
     * Date Posted (str)
     * URL (str)
     * Sentiment Score (str)
+    * Sentiment Label (str)
     '''
 
     if(use_mock_data):
@@ -35,13 +75,14 @@ def Get_News_On_Stock(ticker: str, use_mock_data: bool=False):
     # parse output
     json = request.json()
     output = []
-    number_articles = 5 if int(json['items']) >= 5 else json['items'] # returns top 5 recent articles.
+    number_articles = 20 if int(json['items']) >= 20 else json['items'] # returns top 5 recent articles.
     for idx in range(number_articles):
         current_article = json["feed"][idx]
         article_output = {"summary":current_article["summary"],
                           "time_published":current_article["time_published"],
                           "url":current_article["url"], 
-                          "overall_sentiment_score":current_article["overall_sentiment_score"]
+                          "overall_sentiment_score":current_article["overall_sentiment_score"],
+                          "overall_sentiment_label":current_article["overall_sentiment_label"]
                          }
         
         output.append(article_output)
@@ -57,6 +98,7 @@ def Get_Intraday_Data_On_Stock(ticker: str, timeInterval=5, use_mock_data: bool=
     
     The returned value is a list of ints that represent open prices, with the above
     time interval in-between each value. 
+    
     ''' 
     
     if(use_mock_data):
@@ -102,11 +144,8 @@ def Get_Daily_Data_On_Stock(ticker:str, use_mock_data:bool=False):
 
     # parse output
     data = request.json()["Time Series (Daily)"]
-    output = []
-    for _, innerDict in data.items():
-        output.append(float(innerDict['1. open']))
 
-    return output
+    return Create_Graph_And_Stats_On_AlphaVantageDataSet(data)
 
 def Get_Weekly_Data_On_Stock(ticker):
     ''' Returns the Weekly data on a given stock. ''' 
