@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request
-
+from StockTrends.API_AlphaVantage import Get_News_On_Stock, Get_Intraday_Data_On_Stock, Get_Daily_Data_On_Stock
 
 # TODO: add blueprints for the stock and industry section to help cleanup. 
 # TODO: add login feature to have user history and recommendations. 
@@ -30,14 +30,25 @@ def create_app(test_config=None):
                 return render_template('stocks.html', error_message="Please enter a single stock ticker and select at least one option from the drop-down.")
 
             # Calling API and generating output as needed.
+            output_news_data = False
+            output_price_data = False
+            output_intraday_data = False
+            
+            # NOTE: assumption is that the client will supply a valid ticker. 
             if(selected_news_articles):
-                output_news_data = None
-            if(selected_last_30_day_prices):
-                output_price_data = None
-            if(selected_intraday_data):
-                output_intraday_data = None            
+                output_news_data = Get_News_On_Stock(str(ticker))
 
-            return str(selected_news_articles)
+            if(selected_last_30_day_prices):
+                output_price_data = Get_Daily_Data_On_Stock(str(ticker))
+
+            if(selected_intraday_data):
+                #output_intraday_data = Get_Intraday_Data_On_Stock(str(ticker)) #NOTE: intraday require subscription to AlphaVantage API.          
+                pass
+
+            return render_template('stocks.html', 
+                       output_news_data=output_news_data, 
+                       output_price_data=output_price_data, 
+                       output_intraday_data=output_intraday_data)
         
         return render_template('stocks.html')
 

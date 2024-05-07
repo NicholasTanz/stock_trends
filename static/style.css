@@ -89,3 +89,32 @@ a {
     text-decoration: none; /* Remove underline */
     color: white; /* Set link color */
 }
+
+
+/* Recent News Articles section styles */
+.recent-news {
+    color: white; /* Text color for recent news articles */
+    margin-top: 20px; /* Add some space between the form and recent news */
+}
+
+.recent-news h2 {
+    color: white; /* Text color for section heading */
+}
+
+.recent-news ul {
+    list-style-type: none; /* Remove default list styles */
+    padding: 0; /* Remove default padding */
+}
+
+.recent-news li {
+    margin-bottom: 20px; /* Add some space between articles */
+}
+
+.recent-news a {
+    color: #fff; /* Link color for recent news articles */
+    text-decoration: none; /* Remove underline */
+}
+
+.recent-news a:hover {
+    text-decoration: underline; /* Add underline on hover */
+}
