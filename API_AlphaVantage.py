@@ -1,8 +1,8 @@
 '''functions to utilize the Alpha Vantage API '''
 # Docs: https://www.alphavantage.co/documentation/
 
-from StockTrends.config import AlphaVantage_API_KEY
-#from config import AlphaVantage_API_KEY
+#from StockTrends.config import AlphaVantage_API_KEY
+from config import AlphaVantage_API_KEY
 from datetime import datetime
 import requests
 import matplotlib.pyplot as plt
@@ -13,32 +13,37 @@ import base64
 AlphaVantage_API_Key = AlphaVantage_API_KEY
 BaseURL = "https://www.alphavantage.co/query"
 
+def Create_Graph_And_Stats_On_AlphaVantageDataSet(dataSet):
+    """Creates a graph and generates basic statistics
+    
+    NOTE: only works for Daily, Weekly and Monthly datasets.
 
-# TODO: Implement Error Handling and Improve docstrings / arg labels. 
+    Args:
+        dataSet: time series json data from Alpha Vantage API call.
+    
+    Returns:
+        Dict: dictonary containing graph data, and statistics.
+    """ 
 
-
-def Create_Graph_And_Stats_On_AlphaVantageDataSet(alphaVantageDataSet):
-    #TODO: add functionality for intraday, week, month, etc.
-    ''' '''
-    x_vals = []
-    y_vals = []
-    for (date, innerDataDict) in (alphaVantageDataSet.items()):
-        y_vals.append(float(innerDataDict["1. open"]))
-        x_vals.append(datetime.strptime(date, "%Y-%m-%d"))
+    x_values = []
+    y_values = []
+    for date, innerDataDict in dataSet.items():
+        y_values.append(float(innerDataDict["1. open"]))
+        x_values.append(datetime.strptime(date, "%Y-%m-%d"))
     
     # Generate Stats. 
     stats = {
-    'mean':np.mean(y_vals),
-    'stdev':np.std(y_vals),
-    'median':np.median(y_vals),
-    'max':np.max(y_vals),
-    'min':np.min(y_vals)
+    'mean':np.mean(y_values),
+    'stdev':np.std(y_values),
+    'median':np.median(y_values),
+    'max':np.max(y_values),
+    'min':np.min(y_values)
     }
 
     # Create Graph.
     plt.figure(figsize=(8,6))
-    plt.scatter(x_vals, y_vals)
-    plt.xlabel('Time (Days)')
+    plt.scatter(x_values, y_values)
+    plt.xlabel('Time')
     plt.ylabel('Price (USD)')
     plt.grid(True)
     plt.title('Stock Price')
@@ -51,55 +56,58 @@ def Create_Graph_And_Stats_On_AlphaVantageDataSet(alphaVantageDataSet):
 
     return {'plot':plot_data, 'stats':stats}
 
-def Get_News_On_Stock(ticker: str, use_mock_data: bool=False):
-    ''' Returns the latest news on a given stock. 
+def Get_Stock_Data(ticker:str, timeInterval:str, use_mock_data:bool=False):
+    """ utilizes Alpha Vantage API to gather stock data. 
 
-    The returned value is a list of dicts which contain the following:
-    * Summary (str)
-    * Date Posted (str)
-    * URL (str)
-    * Sentiment Score (str)
-    * Sentiment Label (str)
-    '''
+    Args:
+        ticker: Stock ticker. (Ex: AAPL, MSFT).
+        timeInterval: time interval must be 'Daily', 'Weekly', or 'Monthly'.
+        use_mock_data: data utilized for testing. 
+
+    Returns:
+        Dict: dictonary containing graph data, and statistics.
+    """ 
+    
+    if(timeInterval == "Daily"):
+        function_param = "TIME_SERIES_DAILY"
+        key = "Time Series (Daily)"
+    elif(timeInterval == "Weekly"):
+        function_param = "TIME_SERIES_WEEKLY"
+        key = "Weekly Time Series"
+    elif(timeInterval == "Monthly"):
+        function_param = "TIME_SERIES_MONTHLY"
+        key = "Monthly Time Series"
+    else:
+        # TODO: add error handle for invalid option.
+        pass
 
     if(use_mock_data):
-        request = requests.get('https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=AAPL&apikey=demo')
+        request = requests.get(f'https://www.alphavantage.co/query?function={function_param}&symbol=IBM&apikey=demo')
     else:
         params = {
-            'function':"NEWS_SENTIMENT",
-            'tickers':ticker,
+            'function':f'TIME_SERIES_{function_param}',
+            'symbol':ticker,
             'apikey':AlphaVantage_API_Key
         }
+
         request = requests.get(BaseURL, params=params)
 
     # parse output
-    json = request.json()
-    output = []
-    number_articles = 20 if int(json['items']) >= 20 else json['items'] # returns top 5 recent articles.
-    for idx in range(number_articles):
-        current_article = json["feed"][idx]
-        article_output = {"summary":current_article["summary"],
-                          "time_published":current_article["time_published"],
-                          "url":current_article["url"], 
-                          "overall_sentiment_score":current_article["overall_sentiment_score"],
-                          "overall_sentiment_label":current_article["overall_sentiment_label"]
-                         }
-        
-        output.append(article_output)
+    data = request.json()[key]
 
-    return output
+    return Create_Graph_And_Stats_On_AlphaVantageDataSet(data)
 
+def Get_Intraday_Data_On_Stock(ticker: str, timeInterval:int=5, use_mock_data: bool=False):
+    """ utilizes Alpha Vantage API to gather intraday stock data. 
 
-# NOTE: This api call requires a subscription to the AlphaVantage API. 
-def Get_Intraday_Data_On_Stock(ticker: str, timeInterval=5, use_mock_data: bool=False):
-    ''' Returns the Intraday data on a given stock. (timeInterval is in mins)
-    
-    * timeInterval: (must be 1, 5, 15, 30, or 60)
-    
-    The returned value is a list of ints that represent open prices, with the above
-    time interval in-between each value. 
-    
-    ''' 
+    Args:
+        ticker: Stock ticker. (Ex: AAPL, MSFT).
+        timeInterval: time interval (in minutes) must be 1, 5, 10, 15, 30, 60.
+        use_mock_data: data utilized for testing. 
+
+    Returns:
+        List: list containing opening prices at the given timeInterval above.
+    """     
     
     if(use_mock_data):
         request = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=demo')
@@ -125,73 +133,47 @@ def Get_Intraday_Data_On_Stock(ticker: str, timeInterval=5, use_mock_data: bool=
 
     return output
 
-def Get_Daily_Data_On_Stock(ticker:str, use_mock_data:bool=False):
-    ''' Returns the Daily data on a given stock. 
-    
-    The returned value is a list of the last 100 daily open values. 
-    ''' 
+
+def Get_News_On_Stock(ticker: str, use_mock_data: bool=False):
+    """ utilizes Alpha Vantage API to gather news and sentiment of a stock. 
+
+    Args:
+        ticker: Stock ticker. (Ex: AAPL, MSFT).
+        use_mock_data: data utilized for testing. 
+
+    Returns:
+        List: list of dictonaries, with each dictonary containing the following keys:
+            * summary 
+            * time_published
+            * url
+            * overall_sentiment_score
+            * overall_sentiment_label
+    """   
+
 
     if(use_mock_data):
-        request = requests.get('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=demo')
+        request = requests.get('https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=AAPL&apikey=demo')
     else:
         params = {
-            'function':'TIME_SERIES_DAILY',
-            'symbol':ticker,
+            'function':"NEWS_SENTIMENT",
+            'tickers':ticker,
             'apikey':AlphaVantage_API_Key
         }
-
         request = requests.get(BaseURL, params=params)
 
     # parse output
-    data = request.json()["Time Series (Daily)"]
+    json = request.json()
+    output = []
+    number_articles = 20 if int(json['items']) >= 20 else json['items']
+    for idx in range(number_articles):
+        current_article = json["feed"][idx]
+        article_output = {"summary":current_article["summary"],
+                          "time_published":current_article["time_published"],
+                          "url":current_article["url"], 
+                          "overall_sentiment_score":current_article["overall_sentiment_score"],
+                          "overall_sentiment_label":current_article["overall_sentiment_label"]
+                         }
+        
+        output.append(article_output)
 
-    return Create_Graph_And_Stats_On_AlphaVantageDataSet(data)
-
-def Get_Weekly_Data_On_Stock(ticker):
-    ''' Returns the Weekly data on a given stock. ''' 
-    params = {
-        'function':'TIME_SERIES_WEEKLY',
-        'symbol':ticker,
-        'apikey':AlphaVantage_API_Key
-    }
-
-    request = requests.get(BaseURL, params=params)
-    return request
-
-def Get_Monthly_Data_On_Stock(ticker):
-    ''' Returns the Monthly data on a given stock. ''' 
-    params = {
-        'function':'TIME_SERIES_MONTHLY',
-        'symbol':ticker,
-        'apikey':AlphaVantage_API_Key
-    }
-
-    request = requests.get(BaseURL, params=params)
-    return request
-
-def Get_Quote_Endpoint(ticker):
-    ''' Returns the latest quote on a given stock. ''' 
-    params = {
-        'function':'GLOBAL_QUOTE',
-        'symbol':ticker,
-        'apikey':AlphaVantage_API_Key
-    }
-
-    request = requests.get(BaseURL, params=params)
-    return request
-
-def Get_Search_Stocks(keywords):
-    ''' Returns the stocks that match the given keywords. ''' 
-    params = {
-        'function':'SYMBOL_SEARCH',
-        'keywords':keywords,
-        'apikey':AlphaVantage_API_Key
-    }
-
-    request = requests.get(BaseURL, params=params)
-    return request
-
-
-def Get_Advanced_Analytics_On_Stock(ticker):
-    ''' Returns various metrics on a given stock.'''
-    pass 
+    return output

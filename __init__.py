@@ -50,5 +50,15 @@ def create_app(test_config=None):
                        output_intraday_data=output_intraday_data)
         
         return render_template('stocks.html')
+    
+    # Industries Page.
+    @app.route('/industries')
+    def industries_home_page():
+        return "Apologies - Industries has not been implemented."
+
+    # To Be Added. 
+    @app.route('/dog')
+    def to_be_added_dog():
+        return "Nothing to see here..."
 
     return app
