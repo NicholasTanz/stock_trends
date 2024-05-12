@@ -1,5 +1,7 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, g, session, flash
 from StockTrends.API_AlphaVantage import Get_News_On_Stock, Get_Intraday_Data_On_Stock, Get_Stock_Data
+from StockTrends.db import get_db
+from werkzeug.security import check_password_hash, generate_password_hash
 from . import db
 import os
 
@@ -13,6 +15,12 @@ def create_app(test_config=None):
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'StockTrends.sqlite')
     )
+    
+    # ensure the instance folder exists
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
 
     # init database
     db.init_app(app)
@@ -61,17 +69,77 @@ def create_app(test_config=None):
     # TODO: Implmentation should be very similar to stocks page.
     @app.route('/industries')
     def industries_home_page():
-        return "Industries has not been implemented."
+        return render_template('industries.html')
 
     # Option for Paper Trading  
     @app.route('/PaperTrade')
-    def to_be_added_dog():
-        return "Paper Trade"
+    def paper_trade():
+        return render_template("papertrade.html")
+
 
     # Login page
-    @app.route('/login')
+    @app.route('/login', methods=('GET', 'POST'))
     def login():
+        if request.method == 'POST':
+            # login logic
+            username = request.form['username']
+            password = request.form['password']
+            db = get_db()
+            error = None
+
+            user = db.execute(
+                'SELECT * FROM user WHERE username = ?', (username,)
+            ).fetchone()
+
+            if user is None:
+                error = 'Incorrect username.'
+            elif not check_password_hash(user['password'], password):
+                error = 'Incorrect password.'
+
+            if error == None:
+                session.clear() # currently not utilizing session logic. 
+                session['user_id'] = user['id']
+                return "login complete" # change later
+
+            return render_template("login.html", error=error)
+
+        # simply return page.
         return render_template('login.html')
+    
+
+    # Register Page
+    # TODO: add password requirements (Ex: 8 chars, 1 upper, 1 num, 1 special.)
+    @app.route('/register', methods=('GET', 'POST'))
+    def regsiter():
+        if request.method == 'POST':
+            # register user
+            username = request.form['username']
+            password = request.form['password']
+            db = get_db()
+            error = None
+
+            if not username:
+                error = 'Username is required.'
+            elif not password:
+                error = 'Password is required.'
+
+            if error is None:
+                try:
+                    db.execute(
+                        "INSERT INTO user (username, password) VALUES (?, ?)",
+                        (username, generate_password_hash(password)),
+                    )
+                    db.commit()
+                except db.IntegrityError:
+                    error = f"User {username} is already registered, please select another username."
+                else:
+                    return redirect(url_for("login"))
+
+            return render_template('register.html', error=error)
+            
+        
+        return render_template("register.html")
+
 
 
     return app

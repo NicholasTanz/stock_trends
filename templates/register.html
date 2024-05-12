@@ -20,7 +20,7 @@
             margin: 50px auto;
         }
 
-        .login label, .login input[type="text"], .login input[type="password"] {
+        .register label, .register input[type="text"], .register input[type="password"] {
             display: block;
             width: 100%;
             padding: 10px;
@@ -31,7 +31,7 @@
             color: white;
         }
 
-        .login input[type="submit"] {
+        .register input[type="submit"] {
             background-color: #fff;
             color: black;
             border: none;
@@ -48,7 +48,7 @@
         <a href="/">
             <h1>Stock Trends</h1>
         </a>
-
+        
         <div class="auth-links">
             <a href="/login" class="login-link">Login</a>
             <a href="/register" class="register-link">Register</a>
@@ -56,14 +56,14 @@
 
     </div>
     <div class="container">
-        <section class="login">
-            <h2>Login</h2>
+        <section class="register">
+            <h2>Register</h2>
             <!-- Error Message Section -->
             {% if error %}
                 <p style="color: rgb(255, 51, 51);">{{ error }}</p>
             {% endif %}
 
-            <form action="/login" method="post">
+            <form action="/register" method="post">
                 <label for="username">Username:</label><br>
                 <input type="text" id="username" name="username"><br><br>
                 <label for="password">Password:</label><br>
@@ -78,5 +78,6 @@
     <footer class="footer">
         <a href="https://github.com/NicholasTanz/StockTrends">Source Code</a>
     </footer>
+
 </body>
 </html>
