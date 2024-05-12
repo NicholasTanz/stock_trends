@@ -1,5 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request
-from StockTrends.API_AlphaVantage import Get_News_On_Stock, Get_Intraday_Data_On_Stock, Get_Daily_Data_On_Stock
+from StockTrends.API_AlphaVantage import Get_News_On_Stock, Get_Intraday_Data_On_Stock, Get_Stock_Data
+from . import db
+import os
 
 # TODO: add blueprints for the stock and industry section to help cleanup. 
 # TODO: add login feature to have user history and recommendations. 
@@ -9,8 +11,12 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
+        DATABASE=os.path.join(app.instance_path, 'StockTrends.sqlite')
     )
 
+    # init database
+    db.init_app(app)
+    
     # home page 
     @app.route('/')
     def basic():
@@ -39,7 +45,7 @@ def create_app(test_config=None):
                 output_news_data = Get_News_On_Stock(str(ticker), True)
 
             if(selected_last_30_day_prices):
-                output_price_data = Get_Daily_Data_On_Stock(str(ticker), True)
+                output_price_data = Get_Stock_Data(str(ticker), 'Daily', True)
 
             if(selected_intraday_data):
                 output_intraday_data = Get_Intraday_Data_On_Stock(str(ticker), 5, True) #NOTE: intraday require subscription to AlphaVantage API.          
@@ -52,13 +58,20 @@ def create_app(test_config=None):
         return render_template('stocks.html')
     
     # Industries Page.
+    # TODO: Implmentation should be very similar to stocks page.
     @app.route('/industries')
     def industries_home_page():
-        return "Apologies - Industries has not been implemented."
+        return "Industries has not been implemented."
 
-    # To Be Added. 
-    @app.route('/dog')
+    # Option for Paper Trading  
+    @app.route('/PaperTrade')
     def to_be_added_dog():
-        return "Nothing to see here..."
+        return "Paper Trade"
+
+    # Login page
+    @app.route('/login')
+    def login():
+        return render_template('login.html')
+
 
     return app

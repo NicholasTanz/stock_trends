@@ -1,8 +1,8 @@
 '''functions to utilize the Alpha Vantage API '''
 # Docs: https://www.alphavantage.co/documentation/
 
-#from StockTrends.config import AlphaVantage_API_KEY
-from config import AlphaVantage_API_KEY
+from StockTrends.config import AlphaVantage_API_KEY
+#from config import AlphaVantage_API_KEY
 from datetime import datetime
 import requests
 import matplotlib.pyplot as plt

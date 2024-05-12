@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Stock Trends</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+
+        .container {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: 50px auto;
+        }
+
+        .login label, .login input[type="text"], .login input[type="password"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #444;
+            border: none;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .login input[type="submit"] {
+            background-color: #fff;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="title-bar">
+        <a href="/">
+            <h1>Stock Trends</h1>
+        </a>
+    </div>
+    <div class="container">
+        <section class="login">
+            <h2>Login</h2>
+            <form action="/login" method="post">
+                <label for="username">Username:</label><br>
+                <input type="text" id="username" name="username"><br><br>
+                <label for="password">Password:</label><br>
+                <input type="password" id="password" name="password"><br><br>
+                <input type="submit" value="Login">
+            </form>
+        </section>
+    </div>
+</body>
+</html>
