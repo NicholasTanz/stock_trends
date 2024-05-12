@@ -96,10 +96,16 @@ def create_app(test_config=None):
             elif not check_password_hash(user['password'], password):
                 error = 'Incorrect password.'
 
+            # No error - user can be logged in.
             if error == None:
-                session.clear() # currently not utilizing session logic. 
+                session.clear()
                 session['user_id'] = user['id']
-                return "login complete" # change later
+
+                balance = db.execute(
+                    'SELECT balance FROM user where username = ?', (username,)
+                ).fetchone()
+
+                return render_template("auth.html", balance=balance[0], username=username)
 
             return render_template("login.html", error=error)
 
@@ -140,6 +146,22 @@ def create_app(test_config=None):
         
         return render_template("register.html")
 
+    # Deposit Page
+    @app.route('/deposit', methods=('POST',))
+    def deposit():
+        db = get_db()
 
+        user = db.execute(
+                'SELECT * FROM user WHERE id = ?', (session['user_id'],)
+            ).fetchone()
 
+        user_balance = float(request.form['amount']) + user['balance']
+
+        db.execute(
+            'UPDATE user SET balance = ? where id = ?',
+            (user_balance, session['user_id'])
+        )
+        db.commit()
+
+        return render_template('auth.html', username=user['username'], balance=user_balance)
     return app
