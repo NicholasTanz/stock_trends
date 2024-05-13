@@ -1,12 +1,12 @@
 #### StockTrends
-* Stock data app created with Flask, Python, Tiingo and AlphaVantage API.
+* Stock data app created with Flask, Python, SQLite, Tiingo and AlphaVantage API.
 
 ## Setup Instructions
 
 # 1. Clone the Repository
 
 ```bash
-git clone [repo_name]
+git clone StockTrends
 ```
 
 # 2. Initialize the Database
