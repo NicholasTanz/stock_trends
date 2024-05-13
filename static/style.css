@@ -221,3 +221,28 @@ p.welcome {
 p.balance {
     color: white; /* Set text color to white */
 }
+
+/* Existing styles */
+
+.positions {
+    color: white; /* Add this line to make text white */
+}
+
+/* Additional styles */
+.positions table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.positions th,
+.positions td {
+    border: 1px solid white;
+    padding: 8px;
+    text-align: left;
+}
+
+.positions th {
+    background-color: #333;
+}
+

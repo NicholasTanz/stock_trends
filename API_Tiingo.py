@@ -1,10 +1,10 @@
 '''functions to utilize the Tiingo API '''
 # Docs: https://www.tiingo.com/documentation/
 
-import config
+from StockTrends.config import Tiingo_API_KEY
 import requests
 
-Tiingo_API_Key = config.Tiingo_API_KEY
+Tiingo_API_Key = Tiingo_API_KEY
 
 headers = {
         'Content-Type': 'application/json',
@@ -28,5 +28,5 @@ def Get_Current_Stock_Price(ticker:str, use_mock_data:bool=False):
 
     URL = f"https://api.tiingo.com/tiingo/daily/{ticker}/prices"
     request = requests.get(URL, headers=headers)
- 
+    
     return request.json()[0]['open']

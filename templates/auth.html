@@ -27,6 +27,45 @@
                 <button type="submit">Deposit</button>
             </form>
 
+    <!-- Purchase Section -->
+    <div class="purchase">
+        <h2 style="color: white">Make Transactions</h2>
+
+        {% if error %}
+            <p class="error", style="color: red">{{ error }}</p>
+        {% endif %}
+
+        <form action="/purchase" method="post">
+            <input type="text" name="ticker" placeholder="Enter ticker symbol" required>
+            <input type="number" name="shares" placeholder="Enter share amount" required>
+            <button type="submit" name="action" value="purchase">Purchase</button>
+            <button type="submit" name="action" value="sell">Sell</button>
+        </form>
+    </div>
+
+    <!-- Positions Section -->
+    <div class="positions">
+        <h2>Positions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Stock</th>
+                    <th>Price</th>
+                    <th>Shares</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for position in positions %}
+                    <tr>
+                        <td>{{ position.stock_symbol }}</td>
+                        <td>${{ position.purchase_price }}</td>
+                        <td>{{ position.shares }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
 
     <!-- Source Code Link Section -->
     <footer class="footer">
