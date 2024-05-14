@@ -177,3 +177,53 @@ def Get_News_On_Stock(ticker: str, use_mock_data: bool=False):
         output.append(article_output)
 
     return output
+
+def Get_News_On_Industry(ticker: str, use_mock_data: bool=False):
+
+def Get_US_CPI(use_mock_data: bool=False):
+    """ utilizes Alpha Vantage API to gather US Market data. 
+
+    Args:
+        use_mock_data: data utilized for testing. 
+
+    Returns:
+        Dict: dictonary with the following keys:
+            * CPI  
+            * Inflation
+            * Retail Sales
+            * Unemployment Rate
+            * Real GDP
+            * Treasury Yield
+            * Rate 
+    """
+    functions = ["REAL_GDP", 
+        "TREASURY_YIELD", 
+        "FEDERAL_FUNDS_RATE", 
+        "CPI", 
+        "INFLATION",
+        "RETAIL_SALES"]
+    
+    us_market_data = {}
+
+    if(use_mock_data):
+        for function in functions:
+            URL = f"{BaseURL}function={function}&apikey=demo"
+            request = requests.get(URL)
+            
+
+    else:
+        
+        data = []
+        for function in functions:
+            params = {
+                'function':function,
+                'apikey':AlphaVantage_API_Key
+            }
+
+            request = requests.get(BaseURL, params=params)
+
+
+
+    return us_market_data
+    
+       

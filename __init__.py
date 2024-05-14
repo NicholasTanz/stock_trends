@@ -66,13 +66,7 @@ def create_app(test_config=None):
         
         return render_template('stocks.html')
     
-    # Industries Page.
-    # TODO: Implmentation should be very similar to stocks page.
-    @app.route('/industries')
-    def industries_home_page():
-        return render_template('industries.html')
-
-    # Option for Paper Trading  
+    # Option for Paper Trading   
     @app.route('/PaperTrade')
     def paper_trade():
         return render_template("papertrade.html")

@@ -5,6 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Trends</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Additional Styles */
+        .market-data {
+            margin-top: 40px;
+        }
+
+        .market-data h2 {
+            color: #fff; /* Text color for section heading */
+            font-size: 24px; /* Larger font size */
+            margin-bottom: 20px; /* Add some bottom margin */
+            position: relative; /* Position relative for pseudo element */
+        }
+
+        .market-data h2::after {
+            content: ""; /* Add pseudo element */
+            position: absolute; /* Position absolute */
+            bottom: -5px; /* Adjust position */
+            left: 0; /* Align with left */
+            width: 100%; /* Full width */
+            height: 2px; /* Line height */
+            background-color: #007bff; /* Color of the line */
+        }
+
+        .market-data ul {
+            list-style-type: none; /* Remove default list styles */
+            padding: 0; /* Remove default padding */
+        }
+
+        .market-data li {
+            margin-bottom: 20px; /* Add some space between items */
+        }
+
+        .market-data a {
+            color: #fff; /* Link color */
+            text-decoration: none; /* Remove underline */
+        }
+
+        .market-data a:hover {
+            text-decoration: underline; /* Add underline on hover */
+        }
+
+        /* Scrollable container */
+        .scrollable-container {
+            max-height: 200px; /* Adjust the max height as needed */
+            overflow-y: auto; /* Enable vertical scrollbar if needed */
+            border: 1px solid #ccc; /* Add border for visual clarity */
+            border-radius: 5px; /* Add border radius for rounded corners */
+            padding: 10px; /* Add padding for content */
+        }
+    </style>
 </head>
 <body>
     <div class="title-bar">
@@ -25,16 +75,37 @@
             <div class="header-links">
                 <a href="/stocks">Stocks</a>
                 <a href="/PaperTrade">Paper Trading</a>
-                <a href="/industries">Industries</a>
             </div>
         </section>
 
         <!-- About Stock Trends Section -->
         <section class="description">
             <h2>About Stock Trends</h2>
-            <p>Welcome to Stock Trends! This applications allows you to paper trade and query specific stocks and industries for 
-                information such as metrics and news. To get started, click on one of the options above.
+            <p>Welcome to Stock Trends! This applications allows you to paper trade and query stocks for 
+                data, metrics, and news. To get started, click on one of the options above.
             </p>
+        </section>
+
+        <!-- Top Gainers & Losers Section -->
+        <section class="market-data">
+            <h2>Top Gainers & Losers</h2>
+            <div class="scrollable-container"> <!-- Wrap the list inside a scrollable container -->
+                <ul>
+                    {% for company in companies %}
+                        <li><a href="#">{{ company }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+
+        <!-- US Market Data Section -->
+        <section class="market-data">
+            <h2>US Market Data</h2>
+            <ul>
+                {% for key, value in us_market_data.items() %}
+                    <li><a href="#">{{ key }}: {{ value }}</a></li>
+                {% endfor %}
+            </ul>
         </section>
 
     <!-- Source Code Link Section -->
