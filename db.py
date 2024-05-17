@@ -1,9 +1,7 @@
 import sqlite3
 import click
-from flask import current_app, g, request
-from werkzeug.security import generate_password_hash, check_password_hash
-
-# TODO: add docstrings. 
+from flask import current_app, g
+from werkzeug.security import generate_password_hash
 
 def get_db():
     if 'db' not in g:
@@ -40,6 +38,18 @@ def init_app(app):
     app.cli.add_command(init_db_command)
 
 def get_user_positions(user_id: int):
+    """ gets all of the user's current stock positions. 
+
+    Args:
+        user_id: id from user table
+    
+    Returns:
+        Dict: dictonary with the following keys.
+            * purchase_price (float)
+            * stock_symbol (str)
+            * shares (int)
+            * id (int)
+    """ 
     db = get_db()
 
     positions = db.execute(
@@ -73,7 +83,6 @@ def get_user(user_id: int):
     ).fetchone()
 
 
-# TODO: add password requirements (Ex: 8 chars, 1 upper, 1 num, 1 special.)
 def register_user(username: str, password:str) -> None:
     db = get_db()
 
@@ -83,7 +92,13 @@ def register_user(username: str, password:str) -> None:
     )
     db.commit()
 
-def update_balance(user_id: int, new_balance: float) -> None:
+def update_balance(user_id: int, new_balance: float):
+    """ updates a user's balance. 
+
+    Args:
+        user_id: id from user table
+        new_balance: new balance.
+    """ 
     db = get_db()
     db.execute(
             'UPDATE user SET balance = ? where id = ?',
@@ -92,7 +107,15 @@ def update_balance(user_id: int, new_balance: float) -> None:
     
     db.commit()
 
-def register_user_stock_purchase(user_id: int, share_amount, stock_price, ticker) -> None:
+def register_user_stock_purchase(user_id: int, share_amount: int, stock_price: float, ticker: str):
+    """ creates an entry for a stock purchase by a user in the SQLite DB. 
+
+    Args:
+        user_id: id from user table
+        share_amount: amount of shares purchased.
+        stock_price: price of stock when bought.
+        ticker: stock bought
+    """
     db = get_db()
 
     db.execute(
@@ -101,7 +124,15 @@ def register_user_stock_purchase(user_id: int, share_amount, stock_price, ticker
     )
     db.commit()
 
-def update_user_stock_purchase(stock_purchase_id:int, remaining_shares: int) -> None:
+def update_user_stock_purchase(stock_purchase_id:int, remaining_shares: int):
+    """ updates a user's stock purchase.  
+
+    Args:
+        stock_purchase_id.
+        remaining_shares: shares left after selling a stock. 
+
+    """ 
+
     db = get_db()
     
     db.execute(
@@ -110,7 +141,13 @@ def update_user_stock_purchase(stock_purchase_id:int, remaining_shares: int) -> 
     )
     db.commit()
 
-def delete_user_stock_purchase(stock_purchase_id:int)-> None:
+def delete_user_stock_purchase(stock_purchase_id:int):
+    """ Deletes a user's stock purchase.  
+
+    Args:
+        stock_purchase_id.
+
+    """ 
     db = get_db()
     
     db.execute(

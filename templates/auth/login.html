@@ -50,8 +50,8 @@
         </a>
 
         <div class="auth-links">
-            <a href="/login" class="login-link">Login</a>
-            <a href="/register" class="register-link">Register</a>
+            <a href="/auth/login" class="login-link">Login</a>
+            <a href="/auth/register" class="register-link">Register</a>
         </div>
 
     </div>
@@ -63,7 +63,7 @@
                 <p style="color: rgb(255, 51, 51);">{{ error }}</p>
             {% endif %}
 
-            <form action="/login" method="post">
+            <form action="/auth/login" method="post">
                 <label for="username">Username:</label><br>
                 <input type="text" id="username" name="username"><br><br>
                 <label for="password">Password:</label><br>

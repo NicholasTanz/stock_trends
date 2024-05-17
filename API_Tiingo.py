@@ -1,8 +1,8 @@
 '''functions to utilize the Tiingo API '''
 # Docs: https://www.tiingo.com/documentation/
 
-#from StockTrends.config import Tiingo_API_KEY
-from config import Tiingo_API_KEY
+from StockTrends.config import Tiingo_API_KEY
+#from config import Tiingo_API_KEY
 import requests
 
 Tiingo_API_Key = Tiingo_API_KEY

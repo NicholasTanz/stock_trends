@@ -13,16 +13,14 @@
         </a>
 
         <div class="auth-links">
-            <a href="/login" class="login-link">Login</a>
-            <a href="/register" class="register-link">Register</a>
+            <a href="logout" class="login-link">Logout</a>
         </div>
 
     </div>
 
-
         <p class="welcome">Welcome: {{ username }}</p>
         <p class="balance">Balance: ${{ balance }}</p>
-            <form action="/deposit" method="post">
+            <form action="/auth/deposit" method="post">
                 <input type="number" name="amount" placeholder="Enter deposit amount" required>
                 <button type="submit">Deposit</button>
             </form>
@@ -35,7 +33,7 @@
             <p class="error", style="color: red">{{ error }}</p>
         {% endif %}
 
-        <form action="/purchase" method="post">
+        <form action="/auth/purchase" method="post">
             <input type="text" name="ticker" placeholder="Enter ticker symbol" required>
             <input type="number" name="shares" placeholder="Enter share amount" required>
             <button type="submit" name="action" value="purchase">Purchase</button>
