@@ -10,6 +10,7 @@ import numpy as np
 import io
 import base64
 
+# TODO: Add Error Handling for functions. 
 AlphaVantage_API_Key = AlphaVantage_API_KEY
 BaseURL = "https://www.alphavantage.co/query"
 
@@ -77,9 +78,6 @@ def Get_Stock_Data(ticker:str, timeInterval:str, use_mock_data:bool=False):
     elif(timeInterval == "Monthly"):
         function_param = "TIME_SERIES_MONTHLY"
         key = "Monthly Time Series"
-    else:
-        # TODO: add error handle for invalid option.
-        pass
 
     if(use_mock_data):
         request = requests.get(f'https://www.alphavantage.co/query?function={function_param}&symbol=IBM&apikey=demo')
@@ -134,11 +132,12 @@ def Get_Intraday_Data_On_Stock(ticker: str, timeInterval:int=5, use_mock_data: b
     return output
 
 
-def Get_News_On_Stock(ticker: str, use_mock_data: bool=False):
-    """ utilizes Alpha Vantage API to gather news and sentiment of a stock. 
+def Get_News(ticker: str, sector: str, use_mock_data: bool=False):
+    """ utilizes Alpha Vantage API to gather news and sentiment of a stock and/or sector. 
 
     Args:
         ticker: Stock ticker. (Ex: AAPL, MSFT).
+        sector: options: "finance", "life_sciences", "technology", "manufacturing", "blockchain". 
         use_mock_data: data utilized for testing. 
 
     Returns:
@@ -178,9 +177,7 @@ def Get_News_On_Stock(ticker: str, use_mock_data: bool=False):
 
     return output
 
-def Get_News_On_Industry(ticker: str, use_mock_data: bool=False):
-
-def Get_US_CPI(use_mock_data: bool=False):
+def Get_US_Market_Data(use_mock_data: bool=False):
     """ utilizes Alpha Vantage API to gather US Market data. 
 
     Args:
@@ -196,34 +193,38 @@ def Get_US_CPI(use_mock_data: bool=False):
             * Treasury Yield
             * Rate 
     """
-    functions = ["REAL_GDP", 
-        "TREASURY_YIELD", 
-        "FEDERAL_FUNDS_RATE", 
-        "CPI", 
-        "INFLATION",
-        "RETAIL_SALES"]
-    
     us_market_data = {}
+    functions = ["CPI",
+                 "INFLATION",
+                 "RETAIL_SALES",
+                 "UNEMPLOYMENT",
+                 "REAL_GDP",
+                 "TREASURY_YIELD",
+                 "FEDERAL_FUNDS_RATE"
+    ]        
 
     if(use_mock_data):
-        for function in functions:
-            URL = f"{BaseURL}function={function}&apikey=demo"
+        test_URLS = [
+            f"{BaseURL}?function=CPI&interval=monthly&apikey=demo",
+            f"{BaseURL}?function=INFLATION&apikey=demo",
+            f"{BaseURL}?function=RETAIL_SALES&apikey=demo",
+            f"{BaseURL}?function=UNEMPLOYMENT&apikey=demo",
+            f"{BaseURL}?function=REAL_GDP&interval=annual&apikey=demo",
+            f"{BaseURL}?function=TREASURY_YIELD&interval=monthly&maturity=10year&apikey=demo",
+            f"{BaseURL}?function=FEDERAL_FUNDS_RATE&interval=monthly&apikey=demo"
+        ]
+        for Key, URL in zip(functions, test_URLS):
             request = requests.get(URL)
-            
+            us_market_data[Key] = request.json()["data"][0]
 
     else:
-        
-        data = []
         for function in functions:
             params = {
                 'function':function,
                 'apikey':AlphaVantage_API_Key
-            }
+            },
 
             request = requests.get(BaseURL, params=params)
-
-
+            us_market_data[function] = request.json()["data"][0]
 
     return us_market_data
-    
-       

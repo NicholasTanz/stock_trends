@@ -1,8 +1,9 @@
 from flask import Flask, render_template, redirect, url_for, request, g, session, flash
-from StockTrends.API_AlphaVantage import Get_News_On_Stock, Get_Intraday_Data_On_Stock, Get_Stock_Data
-from StockTrends.db import get_db
+from StockTrends.API_AlphaVantage import Get_News, Get_Intraday_Data_On_Stock, Get_Stock_Data
+from StockTrends.db import get_user_positions, get_userID, get_user, register_user, update_balance, register_user_stock_purchase, update_user_stock_purchase, delete_user_stock_purchase
+
 from StockTrends.API_Tiingo import Get_Current_Stock_Price
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import check_password_hash
 from . import db
 import os
 
@@ -51,7 +52,7 @@ def create_app(test_config=None):
             
             # NOTE: assumption is that the client will supply a valid ticker. 
             if(selected_news_articles):
-                output_news_data = Get_News_On_Stock(str(ticker), True)
+                output_news_data = Get_News(str(ticker), True)
 
             if(selected_last_30_day_prices):
                 output_price_data = Get_Stock_Data(str(ticker), 'Daily', True)
@@ -79,12 +80,10 @@ def create_app(test_config=None):
             # login logic
             username = request.form['username']
             password = request.form['password']
-            db = get_db()
             error = None
 
-            user = db.execute(
-                'SELECT * FROM user WHERE username = ?', (username,)
-            ).fetchone()
+            userID = get_userID(username)[0]
+            user = get_user(userID)
 
             if user is None:
                 error = 'Incorrect username.'
@@ -96,13 +95,9 @@ def create_app(test_config=None):
                 session.clear()
                 session['user_id'] = user['id']
 
-                balance = db.execute(
-                    'SELECT balance FROM user where username = ?', (username,)
-                ).fetchone()
-                
-#                positions = get_user_positions(session['user_id'])
-
-                return render_template("auth.html", balance=balance[0], username=username)
+                balance = user['balance']
+                positions = get_user_positions(session['user_id'])
+                return render_template("auth.html", balance=balance, username=username, positions=positions)
 
             return render_template("login.html", error=error)
 
@@ -111,14 +106,12 @@ def create_app(test_config=None):
     
 
     # Register Page
-    # TODO: add password requirements (Ex: 8 chars, 1 upper, 1 num, 1 special.)
     @app.route('/register', methods=('GET', 'POST'))
     def regsiter():
         if request.method == 'POST':
             # register user
             username = request.form['username']
             password = request.form['password']
-            db = get_db()
             error = None
 
             if not username:
@@ -128,15 +121,10 @@ def create_app(test_config=None):
 
             if error is None:
                 try:
-                    db.execute(
-                        "INSERT INTO user (username, password) VALUES (?, ?)",
-                        (username, generate_password_hash(password)),
-                    )
-                    db.commit()
+                    register_user(username, password)
+                    return redirect(url_for("login"))
                 except db.IntegrityError:
                     error = f"User {username} is already registered, please select another username."
-                else:
-                    return redirect(url_for("login"))
 
             return render_template('register.html', error=error)
             
@@ -146,36 +134,19 @@ def create_app(test_config=None):
     # Deposit Page
     @app.route('/deposit', methods=('POST',))
     def deposit():
-        db = get_db()
-
-        user = db.execute(
-                'SELECT * FROM user WHERE id = ?', (session['user_id'],)
-            ).fetchone()
-
+        user = get_user(session['user_id'])
         user_balance = float(request.form['amount']) + user['balance']
-
-        db.execute(
-            'UPDATE user SET balance = ? where id = ?',
-            (user_balance, session['user_id'])
-        )
-        db.commit()
+        update_balance(session['user_id'], user_balance)
 
         return render_template('auth.html', username=user['username'], balance=user_balance)
 
-    # Purchase stock page
-    # TODO: clear up logic between sell and purchase
+    #  Purchase / Sell stock page
     @app.route('/purchase', methods=('POST',))
-    def purchase_stock():
+    def stock_options():
         ticker = request.form['ticker']
         share_amount = float(request.form['shares'])
         stock_price = Get_Current_Stock_Price(str(ticker))
-
-        db = get_db()
-
-        user = db.execute(
-            'SELECT * from user WHERE id = ?', (session['user_id'],)
-        ).fetchone()
-
+        user = get_user(session['user_id'])
         user_balance = user['balance']
 
         if(request.form['action'] == 'purchase'):
@@ -185,18 +156,9 @@ def create_app(test_config=None):
             if(new_balance < 0):
                 return render_template('auth.html', username=user['username'], error='Insufficient funds.', balance=user['balance'])
 
-            db.execute(
-                'UPDATE user SET balance = ? where id = ?',
-                (new_balance, session['user_id'])
-            )
-            db.commit()
+            update_balance(session['user_id'], new_balance)
+            register_user_stock_purchase(session['user_id'], share_amount, stock_price, ticker)
 
-
-            db.execute(
-                'INSERT INTO user_stocks (user_id, shares, purchase_price, stock_symbol) VALUES (?, ?, ?, ?)',
-                (session['user_id'], share_amount, stock_price, ticker)
-            )
-            db.commit()
 
             positions = get_user_positions(session['user_id'])
             return render_template('auth.html', username=user['username'], balance=new_balance, positions=positions)
@@ -218,29 +180,17 @@ def create_app(test_config=None):
 
                         # if remaining shares left, update count for last position.
                         if(remaining_shares != 0):
-                            db.execute(
-                                'UPDATE user_stocks SET shares = ? where id = ?',
-                                (remaining_shares, position['id'])
-                            )
-                            db.commit()
+                            update_user_stock_purchase(position['id'], remaining_shares)
 
                         # delete remaining positions.
                         for position in potential_delete_shares:
-                            db.execute(
-                                'DELETE FROM user_stocks WHERE id = ?',
-                                (position['id'],)
-                            )
-                            db.commit()
+                            delete_user_stock_purchase(position['id'])
 
                     potential_delete_shares.append(position)
 
             if(successful_deletion):
                 new_balance = (share_amount * stock_price) + user['balance']
-                db.execute(
-                    'UPDATE user SET balance = ? where id = ?',
-                    (new_balance, user['id'])
-                )
-                db.commit()
+                update_balance(user['id'], new_balance)
 
                 user_positions = get_user_positions(user['id'])
                 return render_template('auth.html', username=user['username'], balance=new_balance, positions=user_positions)
@@ -250,23 +200,3 @@ def create_app(test_config=None):
 
 
     return app
-
-# TODO: move functions to seperate file later. 
-def get_user_positions(user_id: int):
-    db = get_db()
-
-    positions = db.execute(
-        'SELECT * FROM user_stocks WHERE user_id = ? ', (user_id,)
-    ).fetchall()
-
-    cleaned_positions = []
-
-    # each position is a row within user_stocks table defined in schema.sql
-    for position in positions:
-        cleaned_positions.append({'purchase_price':position['purchase_price'],
-                                  'stock_symbol':position['stock_symbol'],
-                                  'shares':position['shares'],
-                                  'id':position['id']
-                                  })
-
-    return cleaned_positions
