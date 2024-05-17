@@ -5,6 +5,227 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Trends</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .title-bar {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .title-bar a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .title-bar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .auth-links a {
+            margin-left: 15px;
+            padding: 8px 12px;
+            background-color: #0056b3;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+
+        .auth-links a:hover {
+            background-color: #004090;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-size: 28px;
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stock-form form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stock-form input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .stock-form label {
+            color: #333;
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .stock-form button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .stock-form button:hover {
+            background-color: #0056b3;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            display: none;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] + label {
+            position: relative;
+            padding-left: 50px;
+            cursor: pointer;
+            user-select: none;
+            color: #333;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] + label::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 20px;
+            background-color: #ccc;
+            border-radius: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] + label::after {
+            content: "";
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            background-color: #fff;
+            border-radius: 50%;
+            transition: left 0.3s;
+        }
+
+        .checkbox-wrapper input[type="checkbox"]:checked + label::before {
+            background-color: #007bff;
+        }
+
+        .checkbox-wrapper input[type="checkbox"]:checked + label::after {
+            left: 25px;
+        }
+
+        details {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        details summary {
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px 0;
+            background-color: #f0f2f5;
+            border-top: 1px solid #ddd;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: #0056b3;
+        }
+
+        .recent-news ul,
+        .intraday-data ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recent-news li,
+        .intraday-data li {
+            margin-bottom: 20px;
+        }
+
+        .recent-news h3 {
+            margin: 0 0 10px;
+        }
+
+        .recent-news a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .recent-news a:hover {
+            color: #0056b3;
+        }
+
+        .stats-section p {
+            margin: 5px 0;
+        }
+
+        .graph img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="title-bar">
@@ -16,77 +237,80 @@
             <a href="/auth/login" class="login-link">Login</a>
             <a href="/auth/register" class="register-link">Register</a>
         </div>
-
     </div>
+
     <div class="container">
-            <!-- Stock Input Form Section -->
-            <section class="stock-form">
-            
+        <!-- Stock Input Form Section -->
+        <section class="stock-form">
             <!-- Error Message Section -->
             {% if error_message %}
                 <p style="color: rgb(255, 51, 51);">{{ error_message }}</p>
             {% endif %}
-            
+
             <h2>Enter a Stock Ticker</h2>
-                <form action="#" method="post">
-                    <input type="text" name="stock_ticker" id="stock_ticker" placeholder="Enter a stock ticker symbol">
-                    <br>
-                    <input type="checkbox" name="news_articles" id="news_articles">
-                    <label for="news_articles" style="color: white;">Recent News Articles</label>
-                    <br>
-                    <input type="checkbox" name="last_30_day_prices" id="last_30_day_prices">
-                    <label for="last_30_day_prices" style="color: white;">Last 30 Day Prices</label>
-                    <br>
-                    <input type="checkbox" name="intraday_data" id="intraday_data">
-                    <label for="intraday_data" style="color: white;">Intraday Data</label>
-                    <br>
-                    <button type="submit">Submit</button>
-                </form>
-            </section>
+            <form action="#" method="post">
+                <input type="text" name="stock_ticker" id="stock_ticker" placeholder="Enter a stock ticker symbol">
+                
+                <div class="checkbox-group">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" name="news_articles" id="news_articles">
+                        <label for="news_articles">Recent News Articles</label>
+                    </div>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" name="last_30_day_prices" id="last_30_day_prices">
+                        <label for="last_30_day_prices">Last 30 Day Prices</label>
+                    </div>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" name="intraday_data" id="intraday_data">
+                        <label for="intraday_data">Intraday Data</label>
+                    </div>
+                </div>
+                
+                <button type="submit">Submit</button>
+            </form>
+        </section>
     </div>
     
     <div>
         <!-- Recent News Articles Section -->
         {% if output_news_data %}
         <details>
-        <summary style="color: white;">Recent News Articles</summary>
-        <section class="recent-news">
-            <h2>Recent News Articles</h2>
-            <ul>
-                {% for article in output_news_data %}
-                <li>
-                    <h3>Summary: {{ article.summary }}</h3>
-                    <p>Date Posted: {{article.time_published}}</p>
-                    <p>Sentiment Score: {{article.overall_sentiment_score}} ({{article.overall_sentiment_label}})</p>
-                    <a href="{{ article.url }}" target="_blank">Read More</a>
-                </li>
-                {% endfor %}
-            </ul>
-        </section>
+            <summary>Recent News Articles</summary>
+            <section class="recent-news">
+                <h2>Recent News Articles</h2>
+                <ul>
+                    {% for article in output_news_data %}
+                    <li>
+                        <h3>Summary: {{ article.summary }}</h3>
+                        <p>Date Posted: {{article.time_published}}</p>
+                        <p>Sentiment Score: {{article.overall_sentiment_score}} ({{article.overall_sentiment_label}})</p>
+                        <a href="{{ article.url }}" target="_blank">Read More</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
         </details>
         {% endif %}
     </div>
 
-    <div>   
-        <!-- Last 30 day Prices section -->
+    <div>
+        <!-- Last 30 Day Prices Section -->
         {% if output_price_data %}
         <details>
-        <summary style="color: white;">Last 30 Day Prices</summary>
-        <section class="last-30-day-prices">
-            <section class="graph">
-                <img src="data:image/png;base64,{{ output_price_data.plot }}" alt="Sample Plot">
-            </section>
-            <div class="stats-section">
-            <ul>
-                <h2 style="color: white;">Statistics</h2>
+            <summary>Last 30 Day Prices</summary>
+            <section class="last-30-day-prices">
+                <section class="graph">
+                    <img src="data:image/png;base64,{{ output_price_data.plot }}" alt="Sample Plot">
+                </section>
+                <div class="stats-section">
+                    <h2>Statistics</h2>
                     <p>Mean: {{output_price_data.stats.mean}}</p>
                     <p>Standard Deviation: {{output_price_data.stats.std}}</p>
                     <p>Minimum: {{output_price_data.stats.min}}</p>
                     <p>Maximum: {{output_price_data.stats.max}}</p>
                     <p>Median: {{output_price_data.stats.median}}</p>
-            </ul>
-            </div>
-        </section>
+                </div>
+            </section>
         </details>
         {% endif %}
     </div>
@@ -95,26 +319,25 @@
         <!-- Intraday Data Section -->
         {% if output_intraday_data %}
         <details>
-        <summary style="color: white;">Intraday Data</summary>
-        <section class="intraday-data">
-            <h2>Intraday Data</h2>
-            <ul>
-                {% for data in output_intraday_data %}
-                <li>
-                    <p>Time: {{ data.time }}</p>
-                    <p>Open: {{ data.open }}</p>
-                    <p>High: {{ data.high }}</p>
-                    <p>Low: {{ data.low }}</p>
-                    <p>Close: {{ data.close }}</p>
-                    <p>Volume: {{ data.volume }}</p>
-                </li>
-                {% endfor %}
-            </ul>
-        </section>
+            <summary>Intraday Data</summary>
+            <section class="intraday-data">
+                <h2>Intraday Data</h2>
+                <ul>
+                    {% for data in output_intraday_data %}
+                    <li>
+                        <p>Time: {{ data.time }}</p>
+                        <p>Open: {{ data.open }}</p>
+                        <p>High: {{ data.high }}</p>
+                        <p>Low: {{ data.low }}</p>
+                        <p>Close: {{ data.close }}</p>
+                        <p>Volume: {{ data.volume }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
         </details>
         {% endif %}
     </div>
-
 
     <!-- Source Code Link Section -->
     <footer class="footer">

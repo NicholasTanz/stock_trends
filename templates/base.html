@@ -6,53 +6,133 @@
     <title>Stock Trends</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        /* Additional Styles */
-        .market-data {
-            margin-top: 40px;
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
         }
 
-        .market-data h2 {
-            color: #fff; /* Text color for section heading */
-            font-size: 24px; /* Larger font size */
-            margin-bottom: 20px; /* Add some bottom margin */
-            position: relative; /* Position relative for pseudo element */
+        .title-bar {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .market-data h2::after {
-            content: ""; /* Add pseudo element */
-            position: absolute; /* Position absolute */
-            bottom: -5px; /* Adjust position */
-            left: 0; /* Align with left */
-            width: 100%; /* Full width */
-            height: 2px; /* Line height */
-            background-color: #007bff; /* Color of the line */
+        .title-bar a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .title-bar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .auth-links a {
+            margin-left: 15px;
+            padding: 8px 12px;
+            background-color: #0056b3;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+
+        .auth-links a:hover {
+            background-color: #004090;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-size: 28px;
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .clickable-headers .header-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-links a {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .header-links a:hover {
+            background-color: #0056b3;
+        }
+
+        .description p {
+            line-height: 1.6;
+            font-size: 16px;
         }
 
         .market-data ul {
-            list-style-type: none; /* Remove default list styles */
-            padding: 0; /* Remove default padding */
+            list-style: none;
+            padding: 0;
         }
 
         .market-data li {
-            margin-bottom: 20px; /* Add some space between items */
+            margin-bottom: 10px;
         }
 
         .market-data a {
-            color: #fff; /* Link color */
-            text-decoration: none; /* Remove underline */
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s;
         }
 
         .market-data a:hover {
-            text-decoration: underline; /* Add underline on hover */
+            color: #0056b3;
         }
 
-        /* Scrollable container */
         .scrollable-container {
-            max-height: 200px; /* Adjust the max height as needed */
-            overflow-y: auto; /* Enable vertical scrollbar if needed */
-            border: 1px solid #ccc; /* Add border for visual clarity */
-            border-radius: 5px; /* Add border radius for rounded corners */
-            padding: 10px; /* Add padding for content */
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #fff;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px 0;
+            background-color: #f0f2f5;
+            border-top: 1px solid #ddd;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: #0056b3;
         }
     </style>
 </head>
@@ -66,8 +146,8 @@
             <a href="/auth/login" class="login-link">Login</a>
             <a href="/auth/register" class="register-link">Register</a>
         </div>
-    
     </div>
+
     <div class="container">
         <!-- Clickable Headers Section -->
         <section class="clickable-headers">
@@ -81,7 +161,7 @@
         <!-- About Stock Trends Section -->
         <section class="description">
             <h2>About Stock Trends</h2>
-            <p>Welcome to Stock Trends! This applications allows you to paper trade and query stocks for 
+            <p>Welcome to Stock Trends! This application allows you to paper trade and query stocks for 
                 data, metrics, and news. To get started, click on one of the options above.
             </p>
         </section>
@@ -89,7 +169,7 @@
         <!-- Top Gainers & Losers Section -->
         <section class="market-data">
             <h2>Top Gainers & Losers</h2>
-            <div class="scrollable-container"> <!-- Wrap the list inside a scrollable container -->
+            <div class="scrollable-container">
                 <ul>
                     {% for company in companies %}
                         <li><a href="#">{{ company }}</a></li>
@@ -98,11 +178,10 @@
             </div>
         </section>
 
-    <!-- Source Code Link Section -->
-    <footer class="footer">
-        <a href="https://github.com/NicholasTanz/StockTrends">Source Code</a>
-    </footer>
-
+        <!-- Source Code Link Section -->
+        <footer class="footer">
+            <a href="https://github.com/NicholasTanz/StockTrends">Source Code</a>
+        </footer>
     </div>
 </body>
 </html>

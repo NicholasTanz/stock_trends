@@ -14,7 +14,7 @@ def stock_home_page():
 
         # Error Handling - checking if the user selected at least one checkbox option and a ticker.
         if(ticker == '' or (not selected_intraday_data and not selected_last_30_day_prices and not selected_news_articles)):
-            return render_template('stocks.html', error_message="Please enter a single stock ticker and select at least one option from the drop-down.")
+            return render_template('stocks/stocks.html', error_message="Please enter a single stock ticker and select at least one option from the drop-down.")
 
         # Calling API and generating output as needed.
         output_news_data = False

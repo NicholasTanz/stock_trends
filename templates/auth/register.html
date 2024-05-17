@@ -3,64 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Stock Trends</title>
+    <title>register - Stock Trends</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
         body {
-            background-color: black;
-            color: white;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .title-bar {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .title-bar a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .title-bar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .auth-links a {
+            margin-left: 15px;
+            padding: 8px 12px;
+            background-color: #0056b3;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+
+        .auth-links a:hover {
+            background-color: #004090;
         }
 
         .container {
-            background-color: #1a1a1a;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             max-width: 400px;
-            margin: 50px auto;
+            margin: 40px auto;
+            padding: 0 20px;
         }
 
-        .register label, .register input[type="text"], .register input[type="password"] {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #444;
-            border: none;
-            border-radius: 5px;
-            color: white;
-        }
-
-        .register input[type="submit"] {
+        .register {
             background-color: #fff;
-            color: black;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .register h2 {
+            font-size: 24px;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .register form label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .register form input[type="text"],
+        .register form input[type="password"] {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .register form input[type="text"]:focus,
+        .register form input[type="password"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .register form input[type="submit"] {
+            width: 100%;
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: #fff;
             border: none;
             border-radius: 5px;
-            padding: 10px;
+            font-size: 16px;
             cursor: pointer;
-            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .register form input[type="submit"]:hover {
+            background-color: #0056b3;
         }
     </style>
-
 </head>
 <body>
     <div class="title-bar">
         <a href="/">
             <h1>Stock Trends</h1>
         </a>
-        
+
         <div class="auth-links">
             <a href="/auth/login" class="login-link">Login</a>
             <a href="/auth/register" class="register-link">Register</a>
         </div>
-
     </div>
+
     <div class="container">
         <section class="register">
             <h2>Register</h2>
             <!-- Error Message Section -->
             {% if error %}
-                <p style="color: rgb(255, 51, 51);">{{ error }}</p>
+                <p class="error" style="color: red;">{{ error }}</p>
             {% endif %}
 
             <form action="/auth/register" method="post">
@@ -73,11 +137,9 @@
         </section>
     </div>
 
-
     <!-- Source Code Link Section -->
     <footer class="footer">
         <a href="https://github.com/NicholasTanz/StockTrends">Source Code</a>
     </footer>
-
 </body>
 </html>

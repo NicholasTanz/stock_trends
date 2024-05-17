@@ -137,7 +137,7 @@ def update_user_stock_purchase(stock_purchase_id:int, remaining_shares: int):
     
     db.execute(
         'UPDATE user_stocks SET shares = ? where id = ?',
-        (stock_purchase_id, remaining_shares)
+        (remaining_shares, stock_purchase_id)
     )
     db.commit()
 

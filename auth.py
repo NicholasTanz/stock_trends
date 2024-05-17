@@ -121,7 +121,6 @@ def stock_options():
         potential_delete_shares = []
         successful_deletion = False
 
-        print(user_positions)
         # 1 position: 100 shares - sell 100 shares
         for position in user_positions:
             if position['stock_symbol'] == ticker:
@@ -148,6 +147,7 @@ def stock_options():
             update_balance(user['id'], new_balance)
 
             user_positions = get_user_positions(user['id'])
+            print(user_positions)
             return render_template('auth/authorized.html', username=user['username'], balance=new_balance, positions=user_positions)
         else:
             user_positions = get_user_positions(user['id'])

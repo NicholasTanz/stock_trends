@@ -5,6 +5,167 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Trends</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .title-bar {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .title-bar a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .title-bar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .auth-links a {
+            margin-left: 15px;
+            padding: 8px 12px;
+            background-color: #0056b3;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+
+        .auth-links a:hover {
+            background-color: #004090;
+        }
+
+        .welcome, .balance {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #007bff;
+        }
+
+        .purchase {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .purchase h2 {
+            font-size: 24px;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .purchase form input[type="text"],
+        .purchase form input[type="number"] {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .purchase form button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .purchase form button:hover {
+            background-color: #0056b3;
+        }
+
+        .positions {
+            margin-top: 20px;
+        }
+
+        .positions h2 {
+            font-size: 24px;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .positions table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .positions th, .positions td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px 0;
+            background-color: #f0f2f5;
+            border-top: 1px solid #ddd;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: #0056b3;
+        }
+
+        .deposit-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .deposit-container input[type="number"] {
+            flex: 1;
+            margin-right: 10px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .deposit-container input[type="number"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .deposit-container button {
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .deposit-container button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
     <div class="title-bar">
@@ -15,22 +176,21 @@
         <div class="auth-links">
             <a href="logout" class="login-link">Logout</a>
         </div>
-
     </div>
 
-        <p class="welcome">Welcome: {{ username }}</p>
-        <p class="balance">Balance: ${{ balance }}</p>
-            <form action="/auth/deposit" method="post">
-                <input type="number" name="amount" placeholder="Enter deposit amount" required>
-                <button type="submit">Deposit</button>
-            </form>
+    <p class="welcome">Welcome: {{ username }}</p>
+    <p class="balance">Balance: ${{ balance }}</p>
+    <form action="/auth/deposit" method="post" class="deposit-container">
+        <input type="number" name="amount" placeholder="Enter deposit amount" required>
+        <button type="submit">Deposit</button>
+    </form>
 
     <!-- Purchase Section -->
     <div class="purchase">
-        <h2 style="color: white">Make Transactions</h2>
+        <h2>Make Transactions</h2>
 
         {% if error %}
-            <p class="error", style="color: red">{{ error }}</p>
+            <p class="error">{{ error }}</p>
         {% endif %}
 
         <form action="/auth/purchase" method="post">
@@ -63,7 +223,6 @@
             </tbody>
         </table>
     </div>
-
 
     <!-- Source Code Link Section -->
     <footer class="footer">
