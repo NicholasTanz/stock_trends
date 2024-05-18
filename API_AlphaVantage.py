@@ -264,3 +264,36 @@ def Get_US_Market_Data(use_mock_data: bool=False):
             us_market_data[function] = request.json()["data"][0]
 
     return us_market_data
+
+def Get_Ticker_Suggestions(user_input: str, use_mock_data:bool=False):
+    """ utilizes Alpha Vantage API to recommend tickers. 
+
+    Args:
+        user_input: user input into search box. 
+        use_mock_data: data utilized for testing. 
+
+    Returns:
+        List: list of suggested tickers #NOTE: tickers aren't limited to US-Stocks. 
+    """
+
+
+    if(use_mock_data):
+        request = requests.get('https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=tesco&apikey=demo')
+    
+    else:
+        params = {
+            'function':"SYMBOL_SEARCH",
+            'keywords':user_input,
+            "apikey":AlphaVantage_API_KEY
+        }
+
+        request = requests.get(BaseURL, params=params)
+
+    data = request.json()["bestMatches"]
+
+    output = []
+
+    for match in data:
+        output.append(match["1. symbol"])
+    
+    return output

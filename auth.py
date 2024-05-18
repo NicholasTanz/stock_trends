@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for
 from werkzeug.security import check_password_hash
+import re
 from StockTrends.db import (
      get_user_positions, get_userID, get_user, register_user, update_balance, register_user_stock_purchase, update_user_stock_purchase, delete_user_stock_purchase, get_db
 )
@@ -7,7 +8,6 @@ from StockTrends.API_Tiingo import Get_Current_Stock_Price
 
 
 # TODO: add feature to display past queries from "Stocks" option. 
-# TODO: add password requirements (Ex: 8 chars, 1 upper, 1 num, 1 special.)
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -43,6 +43,17 @@ def login():
     # simply return page.
     return render_template('auth/login.html')
 
+# Password Validation logic min: (8 chars, 1-upper, 1-lower, and 1 number)
+def valid_password(password):
+    # Define the regex pattern
+    password_pattern = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$')
+    
+    # Check if the password matches the pattern
+    if password_pattern.match(password):
+        return True
+    else:
+        return False
+
 # Register Page. 
 @bp.route('/register', methods=('GET', 'POST'))
 def regsiter():
@@ -58,6 +69,8 @@ def regsiter():
             error = 'Password is required.'
 
         if error is None:
+            if(not valid_password(password)):
+                return render_template('auth/register.html', error="Please enter a valid password.")
             try:
                 register_user(username, password)
             except:

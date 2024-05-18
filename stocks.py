@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, Blueprint
-from StockTrends.API_AlphaVantage import Get_News, Get_Intraday_Data_On_Stock, Get_Stock_Data
+from flask import Flask, render_template, request, Blueprint, jsonify
+from StockTrends.API_AlphaVantage import Get_News, Get_Intraday_Data_On_Stock, Get_Stock_Data, Get_Ticker_Suggestions
 
 bp = Blueprint('stocks', __name__, url_prefix='/stocks')
 
@@ -37,3 +37,11 @@ def stock_home_page():
                     output_intraday_data=output_intraday_data)
     
     return render_template('stocks/stocks.html')
+
+# Auto-generate suggestions logic
+@bp.route('/search')
+def search():
+    query = request.args.get('q', '').upper()
+    suggestions = Get_Ticker_Suggestions(query, True)
+
+    return jsonify(suggestions)
