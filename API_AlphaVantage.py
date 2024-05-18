@@ -9,28 +9,34 @@ import matplotlib.pyplot as plt
 import numpy as np
 import io
 import base64
+import pandas as pd
 
 # TODO: Add Error Handling for functions. 
 AlphaVantage_API_Key = AlphaVantage_API_KEY
 BaseURL = "https://www.alphavantage.co/query"
 
-def Create_Graph_And_Stats_On_AlphaVantageDataSet(dataSet):
+def Create_Graph_And_Stats_On_AlphaVantageDataSet(dataSet, isIntraday:bool=False):
     """Creates a graph and generates basic statistics
-    
-    NOTE: only works for Daily, Weekly and Monthly datasets.
 
     Args:
         dataSet: time series json data from Alpha Vantage API call.
+        isIntraday: flag that should be True when passing Intraday data. 
     
     Returns:
         Dict: dictonary containing graph data, and statistics.
     """ 
 
+    if(isIntraday):
+        format_string = "%Y-%m-%d %H:%M:%S"
+    else:
+        format_string = "%Y-%m-%d"
+
     x_values = []
     y_values = []
+
     for date, innerDataDict in dataSet.items():
         y_values.append(float(innerDataDict["1. open"]))
-        x_values.append(datetime.strptime(date, "%Y-%m-%d"))
+        x_values.append(datetime.strptime(date, format_string))
     
     # Generate Stats. 
     stats = {
@@ -41,13 +47,50 @@ def Create_Graph_And_Stats_On_AlphaVantageDataSet(dataSet):
     'min':np.min(y_values)
     }
 
-    # Create Graph.
-    plt.figure(figsize=(8,6))
-    plt.scatter(x_values, y_values)
-    plt.xlabel('Time')
-    plt.ylabel('Price (USD)')
-    plt.grid(True)
-    plt.title('Stock Price')
+    df = pd.DataFrame({'Date': x_values, 'Price': y_values})
+
+    # Create Graph
+    plt.figure(figsize=(12, 8))
+
+    # Plot original data + ma's
+    plt.scatter(df['Date'], df['Price'], label='Original Data', color='#007acc', linewidth=1.5)
+
+    # Calculate moving averages
+    df['MA_5'] = df['Price'].rolling(window=5).mean()
+    df['MA_10'] = df['Price'].rolling(window=10).mean()
+    df['MA_15'] = df['Price'].rolling(window=15).mean()
+
+    if(isIntraday):
+        plt.plot(df['Date'], df['MA_5'], label='5-min MA', color='#FF6F61', linestyle='--', linewidth=1)
+        plt.plot(df['Date'], df['MA_10'], label='10-min MA', color='#8B0000', linestyle='--', linewidth=1)
+        plt.plot(df['Date'], df['MA_15'], label='15-min MA', color='#228B22', linestyle='--', linewidth=1)        
+    else:
+        plt.plot(df['Date'], df['MA_5'], label='5-Day MA', color='#FF6F61', linestyle='--', linewidth=1)
+        plt.plot(df['Date'], df['MA_10'], label='10-Day MA', color='#8B0000', linestyle='--', linewidth=1)
+        plt.plot(df['Date'], df['MA_15'], label='15-Day MA', color='#228B22', linestyle='--', linewidth=1)
+
+    plt.xlabel('Date', fontsize=14, color='#444444') 
+    plt.ylabel('Price', fontsize=14, color='#444444')
+    plt.title('Stock Price Analysis', fontsize=24, color='#333333', fontweight='bold', fontfamily='sans-serif')
+
+    # Add grid with subtle lines
+    plt.grid(True, linestyle='-', linewidth=0.5, alpha=0.1)
+
+    # Remove top and right spines
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
+
+    # Set background color with a gradient effect
+    plt.gca().set_facecolor('#F7F7F7')
+
+    plt.xticks(fontsize=12, color='#666666')
+    plt.yticks(fontsize=12, color='#666666')
+
+    plt.legend(loc='upper left', fontsize=12, edgecolor='#333333', facecolor='#F7F7F7')
+
+    plt.gca().patch.set_edgecolor('black')
+    plt.gca().patch.set_linewidth(1)
+    plt.gca().patch.set_facecolor('none')
 
     # Save Plot
     buffer = io.BytesIO()
@@ -118,19 +161,12 @@ def Get_Intraday_Data_On_Stock(ticker: str, timeInterval:int=5, use_mock_data: b
         }
 
         request = requests.get(BaseURL, params=params)
-
-    # parse output
-    json = request.json()
-    output = []
-    timeSeries = f"Time Series ({str(timeInterval)}min)"
-    timeSeriesDict = json[timeSeries]
     
-    for _, innerDict in timeSeriesDict.items():
-        # innerDict is a specific point (i.e. datapoint)
-        output.append(float(innerDict["1. open"]))
+    
+    # parse output
+    data = request.json()[f"Time Series ({str(timeInterval)}min)"]
 
-    return output
-
+    return Create_Graph_And_Stats_On_AlphaVantageDataSet(data, True)
 
 def Get_News(ticker: str, sector: str, use_mock_data: bool=False):
     """ utilizes Alpha Vantage API to gather news and sentiment of a stock and/or sector. 

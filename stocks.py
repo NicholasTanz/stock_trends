@@ -23,13 +23,13 @@ def stock_home_page():
         
         # NOTE: assumption is that the client will supply a valid ticker. 
         if(selected_news_articles):
-            output_news_data = Get_News(str(ticker), True)
+            output_news_data = Get_News(str(ticker), None, True)
 
         if(selected_last_30_day_prices):
             output_price_data = Get_Stock_Data(str(ticker), 'Daily', True)
 
         if(selected_intraday_data):
-            output_intraday_data = Get_Intraday_Data_On_Stock(str(ticker), 5, True) #NOTE: intraday require subscription to AlphaVantage API.          
+            output_intraday_data = Get_Intraday_Data_On_Stock(str(ticker), 5, True)
 
         return render_template('stocks/stocks.html', 
                     output_news_data=output_news_data, 

@@ -225,6 +225,17 @@
             height: auto;
             border-radius: 5px;
         }
+
+        .footer {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-top: 1px solid #ccc; 
+    }
+
+
     </style>
 </head>
 <body>
@@ -305,7 +316,7 @@
                 <div class="stats-section">
                     <h2>Statistics</h2>
                     <p>Mean: {{output_price_data.stats.mean}}</p>
-                    <p>Standard Deviation: {{output_price_data.stats.std}}</p>
+                    <p>Standard Deviation: {{output_price_data.stats.stdev}}</p>
                     <p>Minimum: {{output_price_data.stats.min}}</p>
                     <p>Maximum: {{output_price_data.stats.max}}</p>
                     <p>Median: {{output_price_data.stats.median}}</p>
@@ -315,25 +326,24 @@
         {% endif %}
     </div>
 
+
     <div>
         <!-- Intraday Data Section -->
         {% if output_intraday_data %}
         <details>
             <summary>Intraday Data</summary>
-            <section class="intraday-data">
-                <h2>Intraday Data</h2>
-                <ul>
-                    {% for data in output_intraday_data %}
-                    <li>
-                        <p>Time: {{ data.time }}</p>
-                        <p>Open: {{ data.open }}</p>
-                        <p>High: {{ data.high }}</p>
-                        <p>Low: {{ data.low }}</p>
-                        <p>Close: {{ data.close }}</p>
-                        <p>Volume: {{ data.volume }}</p>
-                    </li>
-                    {% endfor %}
-                </ul>
+            <section class="last-30-day-prices">
+                <section class="graph">
+                    <img src="data:image/png;base64,{{ output_intraday_data.plot }}" alt="Sample Plot">
+                </section>
+                <div class="stats-section">
+                    <h2>Statistics</h2>
+                    <p>Mean: {{output_intraday_data.stats.mean}}</p>
+                    <p>Standard Deviation: {{output_intraday_data.stats.stdev}}</p>
+                    <p>Minimum: {{output_intraday_data.stats.min}}</p>
+                    <p>Maximum: {{output_intraday_data.stats.max}}</p>
+                    <p>Median: {{output_intraday_data.stats.median}}</p>
+                </div>
             </section>
         </details>
         {% endif %}
