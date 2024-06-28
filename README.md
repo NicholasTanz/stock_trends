@@ -13,8 +13,8 @@ git clone https://github.com/NicholasTanz/StockTrends/
 -  create a file named `config.py` in the stockTrends repo.
 -  create two variables as follows in `config.py`:
 ```python
--  AlphaVantage_API_KEY = ["your alphaVantage Key"](https://www.alphavantage.co/)
--  Tiingo_API_KEY = ["your Tiingo Key"](https://www.tiingo.com/kb/article/where-to-find-your-tiingo-api-token/)
+AlphaVantage_API_KEY = ["your alphaVantage Key"](https://www.alphavantage.co/)
+Tiingo_API_KEY = ["your Tiingo Key"](https://www.tiingo.com/kb/article/where-to-find-your-tiingo-api-token/)
 ```
 
 # 2. Initialize the Database
