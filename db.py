@@ -1,9 +1,13 @@
+''' all logic for interacting and setting up the database. '''
+
 import sqlite3
 import click
 from flask import current_app, g
 from werkzeug.security import generate_password_hash
 
+
 def get_db():
+    ''' clarify docstring '''
     if 'db' not in g:
         g.db = sqlite3.connect(
             current_app.config['DATABASE'],
@@ -14,17 +18,22 @@ def get_db():
 
     return g.db
 
-def close_db(e=None):
+
+def close_db():
+    ''' clarify docstring '''
     db = g.pop('db', None)
 
     if db is not None:
         db.close()
-    
+
+
 def init_db():
+    ''' clarify docstring '''
     db = get_db()
 
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
+
 
 @click.command('init-db')
 def init_db_command():
@@ -34,22 +43,24 @@ def init_db_command():
 
 
 def init_app(app):
+    ''' clarify docstring '''
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
 
+
 def get_user_positions(user_id: int):
-    """ gets all of the user's current stock positions. 
+    """ gets all of the user's current stock positions.
 
     Args:
         user_id: id from user table
-    
+
     Returns:
         Dict: dictonary with the following keys.
             * purchase_price (float)
             * stock_symbol (str)
             * shares (int)
             * id (int)
-    """ 
+    """
     db = get_db()
 
     positions = db.execute(
@@ -60,22 +71,26 @@ def get_user_positions(user_id: int):
 
     # each position is a row within user_stocks table defined in schema.sql
     for position in positions:
-        cleaned_positions.append({'purchase_price':position['purchase_price'],
-                                  'stock_symbol':position['stock_symbol'],
-                                  'shares':position['shares'],
-                                  'id':position['id']
+        cleaned_positions.append({'purchase_price': position['purchase_price'],
+                                  'stock_symbol': position['stock_symbol'],
+                                  'shares': position['shares'],
+                                  'id': position['id']
                                   })
 
-    return cleaned_positions    
+    return cleaned_positions
 
-def get_userID(username: str):
+
+def get_user_id(username: str):
+    ''' clarify docstring '''
     db = get_db()
 
     return db.execute(
         'SELECT id FROM user WHERE username = ?', (username,)
     ).fetchone()
 
+
 def get_user(user_id: int):
+    ''' clarify docstring '''
     db = get_db()
 
     return db.execute(
@@ -83,7 +98,8 @@ def get_user(user_id: int):
     ).fetchone()
 
 
-def register_user(username: str, password:str) -> None:
+def register_user(username: str, password: str) -> None:
+    ''' clarify docstring '''
     db = get_db()
 
     db.execute(
@@ -92,23 +108,29 @@ def register_user(username: str, password:str) -> None:
     )
     db.commit()
 
+
 def update_balance(user_id: int, new_balance: float):
-    """ updates a user's balance. 
+    """ updates a user's balance.
 
     Args:
         user_id: id from user table
         new_balance: new balance.
-    """ 
+    """
     db = get_db()
     db.execute(
-            'UPDATE user SET balance = ? where id = ?',
-            (new_balance, user_id)
-        )
-    
+        'UPDATE user SET balance = ? where id = ?',
+        (new_balance, user_id)
+    )
+
     db.commit()
 
-def register_user_stock_purchase(user_id: int, share_amount: int, stock_price: float, ticker: str):
-    """ creates an entry for a stock purchase by a user in the SQLite DB. 
+
+def register_user_stock_purchase(
+        user_id: int,
+        share_amount: int,
+        stock_price: float,
+        ticker: str):
+    """ creates an entry for a stock purchase by a user in the SQLite DB.
 
     Args:
         user_id: id from user table
@@ -119,37 +141,40 @@ def register_user_stock_purchase(user_id: int, share_amount: int, stock_price: f
     db = get_db()
 
     db.execute(
-        'INSERT INTO user_stocks (user_id, shares, purchase_price, stock_symbol) VALUES (?, ?, ?, ?)',
+        'INSERT INTO user_stocks (user_id, shares, purchase_price, stock_symbol) \
+        VALUES (?, ?, ?, ?)',
         (user_id, share_amount, stock_price, ticker)
     )
     db.commit()
 
-def update_user_stock_purchase(stock_purchase_id:int, remaining_shares: int):
-    """ updates a user's stock purchase.  
+
+def update_user_stock_purchase(stock_purchase_id: int, remaining_shares: int):
+    """ updates a user's stock purchase.
 
     Args:
         stock_purchase_id.
-        remaining_shares: shares left after selling a stock. 
+        remaining_shares: shares left after selling a stock.
 
-    """ 
+    """
 
     db = get_db()
-    
+
     db.execute(
         'UPDATE user_stocks SET shares = ? where id = ?',
         (remaining_shares, stock_purchase_id)
     )
     db.commit()
 
-def delete_user_stock_purchase(stock_purchase_id:int):
-    """ Deletes a user's stock purchase.  
+
+def delete_user_stock_purchase(stock_purchase_id: int):
+    """ Deletes a user's stock purchase.
 
     Args:
         stock_purchase_id.
 
-    """ 
+    """
     db = get_db()
-    
+
     db.execute(
         'DELETE FROM user_stocks WHERE id = ?',
         (stock_purchase_id,)

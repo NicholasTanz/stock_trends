@@ -1,7 +1,5 @@
 #### StockTrends
-* Stock data app created with Flask, Python, SQLite, Tiingo and AlphaVantage API.
-
-* WIP: needs tests/lint, containerize, github action.
+* Stock data app created with Flask, Python, SQLite, Tiingo and AlphaVantage API. (wip)
 
 ## Setup Instructions
 

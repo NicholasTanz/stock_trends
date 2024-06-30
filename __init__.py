@@ -1,17 +1,20 @@
+''' Init Stock Trends Application. '''
+
+import os
 from flask import Flask, render_template
 from . import auth
 from . import db
 from . import stocks
-import os
 
-def create_app(test_config=None):
-    # create application and setup configuration. 
+def create_app():
+    ''' Init Stock Trends Application. '''
+    # create application and setup configuration.
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'StockTrends.sqlite')
     )
-    
+
     # ensure instance folder exists
     try:
         os.makedirs(app.instance_path)
@@ -21,7 +24,7 @@ def create_app(test_config=None):
     # init database
     db.init_app(app)
 
-    # Home Page. 
+    # Home Page.
     @app.route('/')
     def home():
         return render_template('base.html')
