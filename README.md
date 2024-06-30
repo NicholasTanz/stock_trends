@@ -10,9 +10,8 @@ git clone https://github.com/NicholasTanz/StockTrends/
 ```
 
 # 2. Set API Keys
-- get your API keys ["your alphaVantage Key"](https://www.alphavantage.co/) & ["your Tiingo Key"](https://www.tiingo.com/kb/article/where-to-find-your-tiingo-api-token/)
--  create a file named `config.py` in the stockTrends repo.
--  create two variables as follows in `config.py`:
+- get your API keys ["AlphaVantage_Key"](https://www.alphavantage.co/) & ["Tiingo_Key"](https://www.tiingo.com/kb/article/where-to-find-your-tiingo-api-token/)
+- add the two keys to the `config.py` file. 
 ```python
 AlphaVantage_API_KEY = "AlphaVantage_key"
 Tiingo_API_KEY = "Tiingo_key"
