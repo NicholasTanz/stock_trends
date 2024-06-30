@@ -24,7 +24,7 @@ jobs:
         pip install pandas
         pip install flask 
         pip install werkzeug
-        pip installclick
+        pip install click
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
