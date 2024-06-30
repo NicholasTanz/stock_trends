@@ -23,7 +23,7 @@ jobs:
         pip install requests
         pip install pandas
         pip install flask 
-        pip install werkzeug.security
+        pip install werkzeug
         pip installclick
     - name: Analysing the code with pylint
       run: |
