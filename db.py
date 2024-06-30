@@ -19,7 +19,7 @@ def get_db():
     return g.db
 
 
-def close_db():
+def close_db(): # pylint: disable=W0613
     ''' clarify docstring '''
     db = g.pop('db', None)
 
