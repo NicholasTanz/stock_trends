@@ -1,9 +1,10 @@
 ''' auth logic '''
 
 import re
+import sqlite3
 from flask import Blueprint, render_template, request, session, redirect, url_for
 from werkzeug.security import check_password_hash
-from StockTrends.db import (
+from stock_trends.db import (
     get_user_positions,
     get_user_id,
     get_user,
@@ -12,7 +13,7 @@ from StockTrends.db import (
     register_user_stock_purchase,
     update_user_stock_purchase,
     delete_user_stock_purchase)
-from StockTrends.api_tiingo import get_current_stock_price
+from stock_trends.api_tiingo import get_current_stock_price
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -86,7 +87,7 @@ def regsiter():
                     error="Please enter a valid password.")
             try:
                 register_user(username, password)
-            except BaseException:
+            except sqlite3.IntegrityError:
                 error = f"User {username} is already registered, please select another username."
             else:
                 return redirect(url_for("auth.login"))

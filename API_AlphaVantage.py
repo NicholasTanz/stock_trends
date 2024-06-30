@@ -8,7 +8,7 @@ import requests
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from StockTrends.config import ALPHAVANTAGE_API_KEY
+from stock_trends.config import ALPHAVANTAGE_API_KEY
 # from config import ALPHAVANTAGE_API_KEY
 BASE_URL = "https://www.alphavantage.co/query"
 
@@ -163,7 +163,8 @@ def get_stock_data(
     Returns:
         Dict: dictonary containing graph data, and statistics.
     """
-
+    function_param = ''
+    key = ''
     if time_interval == "Daily":
         function_param = "TIME_SERIES_DAILY"
         key = "Time Series (Daily)"

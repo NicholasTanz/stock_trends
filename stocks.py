@@ -1,7 +1,7 @@
 ''' Stocks logic. '''
 
 from flask import render_template, request, Blueprint, jsonify
-from StockTrends.api_alphavantage import (get_news, get_intraday_data_on_stock,
+from stock_trends.api_alphavantage import (get_news, get_intraday_data_on_stock,
                                           get_stock_data, get_ticker_suggestions)
 
 bp = Blueprint('stocks', __name__, url_prefix='/stocks')
