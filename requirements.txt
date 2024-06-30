@@ -1,8 +1,0 @@
-matplotlib.pyplot
-numpy
-requests
-pandas
-flask 
-werkzeug.security
-click
-
