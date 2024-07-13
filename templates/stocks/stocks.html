@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Trends</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -279,14 +278,14 @@
             {% if error_message %}
                 <p style="color: rgb(255, 51, 51);">{{ error_message }}</p>
             {% endif %}
-
+    
             <h2>Enter a Stock Ticker</h2>
-            <div class="search-container">
-                <input type="text" id="search-box" placeholder="Enter a stock ticker symbol">
-                <div id="suggestions" class="suggestions"></div>
-            </div>
-            
-            <form action="#" method="post">
+            <form action=# method="post">
+                <div class="search-container">
+                    <input type="text" id="search-box" name="stock_ticker" placeholder="Enter a stock ticker symbol">
+                    <div id="suggestions" class="suggestions"></div>
+                </div>
+                
                 <div class="checkbox-group">
                     <div class="checkbox-wrapper">
                         <input type="checkbox" name="news_articles" id="news_articles">
@@ -296,7 +295,7 @@
                         <input type="checkbox" name="last_30_day_prices" id="last_30_day_prices">
                         <label for="last_30_day_prices">Last 30 Day Prices</label>
                     </div>
-
+    
                     <div class="checkbox-wrapper">
                         <input type="checkbox" name="intraday_data" id="intraday_data">
                         <label for="intraday_data">Intraday Data</label>
@@ -307,6 +306,79 @@
             </form>
         </section>
     </div>
+    
+
+    <div>
+        <!-- Recent News Articles Section -->
+        {% if output_news_data %}
+        <details>
+            <summary>Recent News Articles</summary>
+            <section class="recent-news">
+                <h2>Recent News Articles</h2>
+                <ul>
+                    {% for article in output_news_data %}
+                    <li>
+                        <h3>Summary: {{ article.summary }}</h3>
+                        <p>Date Posted: {{article.time_published}}</p>
+                        <p>Sentiment Score: {{article.overall_sentiment_score}} ({{article.overall_sentiment_label}})</p>
+                        <a href="{{ article.url }}" target="_blank">Read More</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </details>
+        {% endif %}
+    </div>
+
+    <div>
+        <!-- Last 30 Day Prices Section -->
+        {% if output_price_data %}
+        <details>
+            <summary>Last 30 Day Prices</summary>
+            <section class="last-30-day-prices">
+                <section class="graph">
+                    <img src="data:image/png;base64,{{ output_price_data.plot }}" alt="Sample Plot">
+                </section>
+                <div class="stats-section">
+                    <h2>Statistics</h2>
+                    <p>Mean: {{output_price_data.stats.mean}}</p>
+                    <p>Standard Deviation: {{output_price_data.stats.stdev}}</p>
+                    <p>Minimum: {{output_price_data.stats.min}}</p>
+                    <p>Maximum: {{output_price_data.stats.max}}</p>
+                    <p>Median: {{output_price_data.stats.median}}</p>
+                </div>
+            </section>
+        </details>
+        {% endif %}
+    </div>
+
+
+    <div>
+        <!-- Intraday Data Section -->
+        {% if output_intraday_data %}
+        <details>
+            <summary>Intraday Data</summary>
+            <section class="last-30-day-prices">
+                <section class="graph">
+                    <img src="data:image/png;base64,{{ output_intraday_data.plot }}" alt="Sample Plot">
+                </section>
+                <div class="stats-section">
+                    <h2>Statistics</h2>
+                    <p>Mean: {{output_intraday_data.stats.mean}}</p>
+                    <p>Standard Deviation: {{output_intraday_data.stats.stdev}}</p>
+                    <p>Minimum: {{output_intraday_data.stats.min}}</p>
+                    <p>Maximum: {{output_intraday_data.stats.max}}</p>
+                    <p>Median: {{output_intraday_data.stats.median}}</p>
+                </div>
+            </section>
+        </details>
+        {% endif %}
+    </div>
+
+    <!-- Source Code Link Section -->
+    <footer class="footer">
+        <a href="https://github.com/NicholasTanz/StockTrends">Source Code</a>
+    </footer>
 
     <!-- JavaScript for fetching suggestions -->
     <script>

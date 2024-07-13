@@ -27,9 +27,12 @@ def login():
         password = request.form['password']
         error = None
 
-        user_id = get_user_id(username)[0]
-        user = get_user(user_id)
+        user_id = get_user_id(username)
+        if user_id is None:
+            error = 'user does not exist.'
+            return render_template("auth/login.html", error=error)
 
+        user = get_user(user_id[0])
         if user is None:
             error = 'Incorrect username.'
         elif not check_password_hash(user['password'], password):
@@ -54,11 +57,10 @@ def login():
     return render_template('auth/login.html')
 
 # Password Validation logic min: (8 chars, 1-upper, 1-lower, and 1 number)
-
-
 def valid_password(password):
     ''' clarify docstring'''
     # Define the regex pattern
+    # this pattern needs to be updated to allow >= one number.
     password_pattern = re.compile(
         r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$')
 
@@ -97,8 +99,6 @@ def regsiter():
     return render_template("auth/register.html")
 
 # Logout Page - redirect to main page.
-
-
 @bp.route('/logout')
 def logout():
     ''' clarify docstring'''
@@ -106,8 +106,6 @@ def logout():
     return redirect('/')
 
 # Paper Trading Page
-
-
 @bp.route('/PaperTrade')
 def paper_trade():
     ''' clarify docstring'''
@@ -116,8 +114,6 @@ def paper_trade():
         error="Please sign in to paper trade.")
 
 # Deposit Logic
-
-
 @bp.route('/deposit', methods=('POST',))
 def deposit():
     ''' clarify docstring'''
@@ -129,7 +125,6 @@ def deposit():
         'auth/authorized.html',
         username=user['username'],
         balance=user_balance)
-
 
 # Purchase / Selling Logic:
 @bp.route('/purchase', methods=('POST',))
@@ -143,14 +138,17 @@ def stock_options():
 
     if request.form['action'] == 'purchase':
         new_balance = user_balance - (stock_price * share_amount)
+        positions = get_user_positions(session['user_id'])
 
-        # User cannot purchase stock (insufficient funds)
-        if new_balance < 0:
+        # User cannot purchase stock (insufficient funds or entered 0 as share amount).
+        if new_balance < 0 or share_amount == 0:
             return render_template(
                 'auth/authorized.html',
                 username=user['username'],
-                error='Insufficient funds.',
-                balance=user['balance'])
+                error='Insufficient funds.' if new_balance < 0 else "0 entered as share amount.",
+                balance=user['balance'],
+                positions=positions
+                )
 
         update_balance(session['user_id'], new_balance)
         register_user_stock_purchase(
@@ -166,13 +164,12 @@ def stock_options():
             balance=new_balance,
             positions=positions)
 
-    # need to check if they have enough shares.
+    # logic for handling selling action
     user_positions = get_user_positions(session['user_id'])
     total_shares = 0
     potential_delete_shares = []
     successful_deletion = False
 
-    # 1 position: 100 shares - sell 100 shares
     for position in user_positions:
         if position['stock_symbol'] == ticker:
             total_shares += position['shares']
@@ -181,7 +178,6 @@ def stock_options():
             # check to see if there is enough shares
             if total_shares >= share_amount:
                 remaining_shares = total_shares - share_amount
-                print(remaining_shares)
                 successful_deletion = True
 
                 # if remaining shares left, update count for last position
@@ -195,22 +191,21 @@ def stock_options():
                 for position in potential_delete_shares:
                     delete_user_stock_purchase(position['id'])
 
-        if successful_deletion:
-            new_balance = (share_amount * stock_price) + user['balance']
-            update_balance(user['id'], new_balance)
-
-            user_positions = get_user_positions(user['id'])
-            print(user_positions)
-            return render_template(
-                'auth/authorized.html',
-                username=user['username'],
-                balance=new_balance,
-                positions=user_positions)
+    if successful_deletion:
+        new_balance = (share_amount * stock_price) + user['balance']
+        update_balance(user['id'], new_balance)
 
         user_positions = get_user_positions(user['id'])
         return render_template(
             'auth/authorized.html',
             username=user['username'],
-            balance=user['balance'],
-            error='Insufficient shares.',
+            balance=new_balance,
             positions=user_positions)
+
+    user_positions = get_user_positions(user['id'])
+    return render_template(
+        'auth/authorized.html',
+        username=user['username'],
+        balance=user['balance'],
+        error='Insufficient shares.',
+        positions=user_positions)

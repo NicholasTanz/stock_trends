@@ -4,12 +4,12 @@
 from datetime import datetime
 import base64
 import io
+import os
 import requests
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from stock_trends.config import ALPHAVANTAGE_API_KEY
-# from config import ALPHAVANTAGE_API_KEY
+ALPHAVANTAGE_API_KEY = os.getenv('ALPHAVANTAGE_API_KEY')
 BASE_URL = "https://www.alphavantage.co/query"
 
 def create_graph_and_stats_on_alphavantage_data_set(
@@ -194,6 +194,7 @@ def get_stock_data(
     return create_graph_and_stats_on_alphavantage_data_set(data)
 
 
+
 def get_intraday_data_on_stock(
         ticker: str,
         time_interval: int = 5,
@@ -211,9 +212,10 @@ def get_intraday_data_on_stock(
 
     if use_mock_data:
         request = requests.get(
-            'https://www.alphavantage.co/query?function=\
-            TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=demo'
+        'https://www.alphavantage.co/query?function='+
+        'TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=demo'
             , timeout=20)
+        data = request.json()["Time Series (5min)"]
     else:
         params = {
             'function': 'TIME_SERIES_INTRADAY',
@@ -223,9 +225,7 @@ def get_intraday_data_on_stock(
         }
 
         request = requests.get(BASE_URL, params=params, timeout=20)
-
-    # parse output
-    data = request.json()[f"Time Series ({str(time_interval)}min)"]
+        data = request.json()[f"Time Series ({str(time_interval)}min)"]
 
     return create_graph_and_stats_on_alphavantage_data_set(data, True)
 

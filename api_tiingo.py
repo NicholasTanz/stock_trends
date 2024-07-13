@@ -1,9 +1,9 @@
 '''functions to utilize the Tiingo API '''
 # Docs: https://www.tiingo.com/documentation/
 
+import os
 import requests
-from stock_trends.config import TIINGO_API_KEY
-# from config import TIINGO_API_KEY
+TIINGO_API_KEY = os.getenv('TIINGO_API_KEY')
 
 headers = {
     'Content-Type': 'application/json',

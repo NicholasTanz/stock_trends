@@ -7,8 +7,6 @@ from stock_trends.api_alphavantage import (get_news, get_intraday_data_on_stock,
 bp = Blueprint('stocks', __name__, url_prefix='/stocks')
 
 # Stocks page
-
-
 @bp.route('/stock', methods=('GET', 'POST'))
 def stock_home_page():
     ''' Add doc string '''

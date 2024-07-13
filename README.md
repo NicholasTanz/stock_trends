@@ -1,18 +1,17 @@
 #### StockTrends
-* Stock data app created with Flask, Python, SQLite, Tiingo and AlphaVantage API.
-* Currently unstable due to updated dependencies + APIs. 
+* Stock data application created with Flask, Python3, SQLite, and the Tiingo and AlphaVantage API.
 
 ## Setup Instructions
 
 # 1. Clone the Repository
 
 ```bash
-git clone https://github.com/NicholasTanz/StockTrends/
+git clone https://github.com/NicholasTanz/stock_trends/
 ```
 
 # 2. Set API Keys
 - get your API keys: [AlphaVantage_Key](https://www.alphavantage.co/) and [Tiingo_Key](https://www.tiingo.com/kb/article/where-to-find-your-tiingo-api-token/)
-- add the two keys to the `config.py` file. 
+- set the following environment variables with the key values 
 ```python
 ALPHAVANTAGE_API_KEY = "AlphaVantage_key"
 TIINGO_API_KEY = "Tiingo_key"
@@ -24,7 +23,7 @@ Navigate to the project directory and run the following:
 
 ```bash
 # Run the command below in the parent directory of the cloned repo.
-# (i.e. if the repo location is in user/myUser/StockTrends, you would run this command in user/myUser). 
+# (i.e. if the repo location is in user/myUser/stock_trends, you would run this command in user/myUser). 
 flask --app stock_trends init-db
 ```
 
